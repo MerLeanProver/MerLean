@@ -2,10 +2,10 @@
 .env
 .venv/
 .lake/
-lake-manifest.json
-lean-toolchain
-lakefile.toml
-MerLeanExperiment.lean
+/lake-manifest.json
+/lean-toolchain
+/lakefile.toml
+/MerLeanExperiment.lean
 __pycache__/
 *.py[cod]
 *.olean
