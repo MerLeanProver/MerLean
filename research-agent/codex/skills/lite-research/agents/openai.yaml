@@ -1,0 +1,4 @@
+interface:
+  display_name: "Lite Research"
+  short_description: "Research fast with targeted Lean checks"
+  default_prompt: "Use $lite-research to investigate this open question with adversarial checks."

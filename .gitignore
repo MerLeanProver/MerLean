@@ -1,0 +1,37 @@
+# --- generated at install time by /init_merlean (templates live in .claude/skills/init_merlean/templates/) ---
+/.mcp.json
+/lean-toolchain
+/lakefile.toml
+/MerLeanExperiment.lean
+/lake-manifest.json
+
+# --- .claude/ is tracked (skills + agents + settings), but not its runtime state ---
+/.claude/worktrees/
+/.claude/scheduled_tasks.lock
+/.claude/settings.local.json
+/.claude/tool-results/
+
+# --- secrets (never commit) ---
+.env
+**/.env
+*.key
+
+# --- python venvs & caches ---
+.venv/
+**/.venv/
+__pycache__/
+**/__pycache__/
+*.pyc
+
+# --- lean build artifacts (for the future workspace) ---
+.lake/
+**/.lake/
+.DS_Store
+
+# LaTeX build artifacts (all campaigns; PDFs stay tracked as deliverables)
+examples/*/paper/*.aux
+examples/*/paper/*.log
+examples/*/paper/*.fls
+examples/*/paper/*.fdb_latexmk
+examples/*/paper/*.out
+examples/*/paper/*.synctex.gz

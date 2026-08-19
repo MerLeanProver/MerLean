@@ -1,0 +1,4 @@
+interface:
+  display_name: "Natural-Language Prover"
+  short_description: "Develop a proof route into a step ledger"
+  default_prompt: "Use $nl-prover to develop this route into a complete proof ledger."

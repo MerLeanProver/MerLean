@@ -1,0 +1,4 @@
+interface:
+  display_name: "Explore"
+  short_description: "Research one mathematical subproblem"
+  default_prompt: "Use $explore to investigate this mathematical subproblem and return evidence."

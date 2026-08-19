@@ -1,0 +1,30 @@
+{
+  "statements": [
+    {
+      "id": "Def_DiscreteTorus",
+      "type": "Definition",
+      "name": "Def_DiscreteTorus",
+      "content": "A discrete torus on n points is the product Fin n x Fin n.",
+      "dependencies": [],
+      "hierarchy_level": 0
+    },
+    {
+      "id": "Lem_TorusCard",
+      "type": "Lemma",
+      "name": "Lem_TorusCard",
+      "content": "The discrete torus on n points has exactly n^2 elements (its cardinality).",
+      "dependencies": ["Def_DiscreteTorus"],
+      "proof": "Count the elements of the product set.",
+      "hierarchy_level": 0
+    },
+    {
+      "id": "Thm_Main",
+      "type": "Theorem",
+      "name": "Thm_Main",
+      "content": "Main theorem relating the discrete torus to its cardinality.",
+      "dependencies": ["Def_DiscreteTorus"],
+      "proof": "Combine the definition with the cardinality lemma.",
+      "hierarchy_level": 0
+    }
+  ]
+}

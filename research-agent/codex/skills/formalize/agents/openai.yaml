@@ -1,0 +1,4 @@
+interface:
+  display_name: "Formalize Paper"
+  short_description: "Turn a paper into a verified Lean library"
+  default_prompt: "Use $formalize to formalize this paper completely in Lean 4."

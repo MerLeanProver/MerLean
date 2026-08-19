@@ -1,0 +1,4 @@
+interface:
+  display_name: "Route Scout"
+  short_description: "Find a representation-changing proof route"
+  default_prompt: "Use $route-scout to pitch a distinct route for this mathematical question."

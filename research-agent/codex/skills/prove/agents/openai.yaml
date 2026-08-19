@@ -1,0 +1,4 @@
+interface:
+  display_name: "Prove Lean File"
+  short_description: "Eliminate every sorry from a Lean file"
+  default_prompt: "Use $prove to complete every unfinished proof in this Lean file."

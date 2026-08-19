@@ -1,0 +1,4 @@
+interface:
+  display_name: "Paper Writing"
+  short_description: "Draft and refine verified mathematics papers"
+  default_prompt: "Use $paper-writing to refine this TeX paper into the next version without losing any results."

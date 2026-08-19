@@ -1,0 +1,2 @@
+route-A kill-test: 400 valid idempotents, 0 failures; control [[1,1],[0,1]]: alg=2 > geo=1 as required
+VERDICT: SURVIVED

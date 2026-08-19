@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PLUGIN_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
+
+if [ -x "$PLUGIN_ROOT/.venv/bin/python" ]; then
+  PYTHON="$PLUGIN_ROOT/.venv/bin/python"
+elif [ -x "$PLUGIN_ROOT/.venv/Scripts/python.exe" ]; then
+  PYTHON="$PLUGIN_ROOT/.venv/Scripts/python.exe"
+else
+  echo "MerLEAN runtime missing; run the init-merlean skill first." >&2
+  exit 1
+fi
+
+if [ "${PLAN_OFFLINE:-0}" = "1" ]; then
+  exec "$PYTHON" "$PLUGIN_ROOT/src/offline_cli.py" "$@"
+fi
+
+exec "$PYTHON" "$PLUGIN_ROOT/src/cli.py" "$@"

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Formalize Problem"
+  short_description: "Translate informal mathematics into Lean"
+  default_prompt: "Use $formalizeproblem to translate this mathematical problem faithfully into Lean 4."

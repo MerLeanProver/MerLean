@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "lean-lsp": {
+      "command": "./scripts/lean-lsp.sh",
+      "args": [],
+      "env": {
+        "PYTHONUTF8": "1"
+      }
+    }
+  }
+}

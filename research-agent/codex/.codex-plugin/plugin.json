@@ -1,0 +1,27 @@
+{
+  "name": "lite-codex",
+  "version": "0.1.0",
+  "description": "Codex-native MerLEAN: autonomous Lean 4 formalization, proving, and research modes over a persistent plan graph.",
+  "author": {
+    "name": "MerLeanProver contributors"
+  },
+  "homepage": "https://github.com/MerLeanProver/MerLean",
+  "repository": "https://github.com/MerLeanProver/MerLean",
+  "license": "Apache-2.0",
+  "keywords": ["lean4", "mathlib", "formalization", "theorem-proving", "research"],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "MerLEAN for Codex",
+    "shortDescription": "Formalize, prove, or research mathematics in Lean 4",
+    "longDescription": "A Codex-native port of every MerLEAN mode and specialist role, with persistent semantic proof memory, parallel subagents, adversarial audits, and kernel-level soundness gates.",
+    "developerName": "MerLeanProver contributors",
+    "category": "Developer Tools",
+    "capabilities": ["Research", "Lean 4", "Multi-agent", "Write"],
+    "defaultPrompt": [
+      "Formalize this paper completely in Lean 4.",
+      "Prove every sorry in this Lean file.",
+      "Research and settle this open mathematical question."
+    ]
+  },
+  "mcpServers": "./.mcp.json"
+}

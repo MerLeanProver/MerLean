@@ -1,0 +1,4 @@
+interface:
+  display_name: "Plan Graph"
+  short_description: "Manage MerLEAN proof and research memory"
+  default_prompt: "Use $plan-graph to inspect and update this MerLEAN campaign plan."

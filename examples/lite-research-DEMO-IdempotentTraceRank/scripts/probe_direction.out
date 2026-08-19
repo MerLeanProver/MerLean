@@ -1,0 +1,26 @@
+========================================================================
+DIRECTION PROBE: tr(A) = rank(A) for real idempotents A^2 = A
+========================================================================
+
+[1] Random idempotents (200 accepted, 0 rejected for ||P^2-P|| > 1e-08):
+kind         count   max ||P^2-P||   max |tr-rank|  status
+orthogonal     100        1.52e-15        1.78e-15  PASS
+oblique        100        2.23e-12        2.31e-14  PASS
+
+[2] Planted degenerate cases (exact):
+  n=0 empty              trace=0      rank=0   PASS
+  A = 0 (4x4)            trace=0      rank=0   PASS
+  A = I (5x5)            trace=5      rank=5   PASS
+  A = [[1,1],[0,0]]      trace=1      rank=1   PASS
+  A = [[0,1],[0,1]]      trace=1      rank=1   PASS
+
+[3] Counterexample hunt: 300 perturb-and-reproject trials, 297 yielded valid idempotents
+  methods: Newton iteration (3X^2-2X^3) + eigendecomposition with adversarial thresholds in [0.2, 0.8]
+  max |tr - rank| over hunt: 1.95e-12
+  no candidate counterexamples  PASS
+
+========================================================================
+MAX |tr - rank| OVER ALL INSTANCES: 1.954e-12
+VERDICT: SUPPORTIVE of tr = rank (over R)
+CAVEAT: probe is over R only; over F_p the identity holds only mod p (e.g. I_p over F_p has rank p, trace 0).
+========================================================================

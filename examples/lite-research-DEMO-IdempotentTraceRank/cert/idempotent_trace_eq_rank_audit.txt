@@ -1,0 +1,13 @@
+idempotent_trace_eq_rank — GOLD pass audit (full formalization, no hypothesis mode)
+status: clean (3 compile iterations, ~4 min wall)
+statement: byte-identical to the faithful anchor (A : Matrix (Fin n) (Fin n) R, A*A = A |- A.trace = (A.rank : R))
+compiler output (verbatim, entire output):
+  'idempotent_trace_eq_rank' depends on axioms: [propext, Classical.choice, Quot.sound]
+0 errors, 0 warnings, no sorry, no axiom declarations.
+Route: Mathlib glue — Matrix.toLin'_mul + Module.End.mul_eq_comp (idempotence transfers),
+LinearMap.IsIdempotentElem.isProj_range (projection onto range),
+LinearMap.IsProj.trace (trace = finrank of range; freeness/finiteness by instances),
+Matrix.trace_toLin'_eq + Matrix.toLin'_apply' (Matrix.rank is definitionally that finrank).
+Note: the formal proof goes through Mathlib's projection-trace theorem, i.e. the SPECTRAL-side
+machinery — not the campaign's factorization route. The theorem is certified; the ledger's own
+route remains formalized only at its crux (Cert_S12).

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Skeptic"
+  short_description: "Adversarially audit a proof ledger"
+  default_prompt: "Use $skeptic to attack this proof ledger and identify all real gaps."

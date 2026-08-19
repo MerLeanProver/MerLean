@@ -1,0 +1,26 @@
+{
+  "name": "paper-writing-codex",
+  "version": "0.1.0",
+  "description": "Codex-native drafting, refinement, and audit of mathematics papers from MerLEAN dependency graphs.",
+  "author": {
+    "name": "MerLeanProver contributors"
+  },
+  "homepage": "https://github.com/MerLeanProver/MerLean",
+  "repository": "https://github.com/MerLeanProver/MerLean",
+  "license": "Apache-2.0",
+  "keywords": ["mathematics", "latex", "paper-writing", "formal-verification", "arxiv"],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "MerLEAN Paper Writing",
+    "shortDescription": "Draft or refine a verified mathematics paper",
+    "longDescription": "Build a mathematics paper from a MerLEAN critical path, or refine an existing TeX paper into a non-destructive next version with result and coverage locks.",
+    "developerName": "MerLeanProver contributors",
+    "category": "Productivity",
+    "capabilities": ["Research", "LaTeX", "Multi-agent", "Write"],
+    "defaultPrompt": [
+      "Draft a paper from this MerLEAN project.",
+      "Refine this TeX paper without losing results.",
+      "Audit this paper revision read-only."
+    ]
+  }
+}

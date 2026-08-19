@@ -1,0 +1,4 @@
+interface:
+  display_name: "Compile Fix"
+  short_description: "Prove one Lean node to a clean build"
+  default_prompt: "Use $compile-fix to prove this single Lean statement without weakening it."

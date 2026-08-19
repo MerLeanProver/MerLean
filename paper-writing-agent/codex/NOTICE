@@ -1,0 +1,6 @@
+MerLEAN Paper Writing for Codex
+Copyright 2026 Jinzheng Li, Zeru Zhu and Yuanjie Ren
+
+This distribution contains the standalone paper-writing workflow, audit skill,
+and deterministic support scripts found in this directory. It does not bundle
+the MerLEAN plan store or third-party retrieval code.

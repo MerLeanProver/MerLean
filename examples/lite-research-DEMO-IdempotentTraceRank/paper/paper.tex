@@ -1,0 +1,233 @@
+\documentclass[11pt]{article}
+\usepackage[margin=1.1in]{geometry}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage[hidelinks]{hyperref}
+\newtheorem{theorem}{Theorem}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{remark}[theorem]{Remark}
+
+\title{Trace and Rank of Real Idempotent Matrices}
+\author{The MerLean research agent\thanks{A demonstration artifact: this note was
+produced end-to-end by the MerLean pipeline (route portfolio, adversarial step-ledger
+debate, targeted kernel-checked certification, and the gated paper-writing protocol)
+from the campaign record in the MerLean repository,
+\url{https://github.com/MerLeanProver/MerLean}, directory
+\texttt{examples/lite-research-DEMO-IdempotentTraceRank}. The mathematics is standard
+undergraduate material and no novelty is claimed for it.}}
+\date{}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+A real square matrix $A$ with $A^2 = A$ has trace equal to its rank; in particular its
+trace is a nonnegative integer. The proof factors $A = BC$ with the rank installed as
+the inner dimension and shows $CB = I_r$, reducing the claim to a trace computation.
+The identity holds over every field in the characteristic-free form
+$\operatorname{tr} A = (\operatorname{rank} A)\cdot 1_F$; characteristic zero is used
+only to read the field element $(\operatorname{rank} A)\cdot 1_F$ as the integer
+$\operatorname{rank} A$, and the order on $\mathbb{R}$ only for the bound
+$0 \le \operatorname{tr} A \le n$. The argument was developed and audited by an
+adversarial proof-ledger process, and the displayed identity of the theorem is checked
+end to end by a proof-assistant kernel under the standard axioms --- by an independent
+route: the factorization proof printed here is itself formalized only at its crux. The
+verification model is described in Section~\ref{sec:verification}.
+\end{abstract}
+
+\section{Introduction}
+
+Idempotent matrices --- the matrices of (generally oblique) projections --- satisfy a
+striking rigidity: the trace, a priori an arbitrary real number, always equals the
+rank. This note records a complete proof of that fact --- self-contained modulo standard
+finite-dimensional linear algebra (existence of a basis, dimension of a span) ---
+together with its exact scope in terms of the underlying field.
+
+This is a demonstration artifact. The result is a textbook exercise; what the note
+exhibits is a pipeline that takes an informally stated question to an adversarially
+audited proof with a machine-checked certificate at its crux, and then to this
+document. The reader interested in the pipeline rather than the mathematics
+should read Section~\ref{sec:verification} first.
+
+Section~\ref{sec:setup} fixes notation. Section~\ref{sec:factorization} proves the result: four lemmas, the
+characteristic-free proposition, and the theorem --- of which Lemma~\ref{lem:cb} is
+the crux --- followed by a remark delimiting the scope.
+Section~\ref{sec:outlook} states what a full formalization would add.
+
+\section{Setup}\label{sec:setup}
+
+Throughout, $F$ is a field and $M_{p\times q}(F)$ denotes the $p\times q$ matrices
+over $F$, with $M_n(F) := M_{n\times n}(F)$; matrices may be empty ($p=0$ or $q=0$),
+a product over an empty inner index is the zero matrix (each entry an empty sum),
+and $I_r \in M_r(F)$ is the identity. For $M \in M_n(F)$ the \emph{trace} is
+$\operatorname{tr} M := \sum_{i=1}^n M_{ii}$ (zero for $n=0$). For
+$M \in M_{p\times q}(F)$, the \emph{column space} is
+$\operatorname{col} M := \{Mx : x \in F^q\} \subseteq F^p$ --- equivalently, since
+$Mx = \sum_j x_j (Me_j)$, the span of the columns --- and the \emph{rank} is
+$\operatorname{rank} M := \dim_F \operatorname{col} M$, a nonnegative integer at most
+$\min(p,q)$. Finally $\iota : \mathbb{Z} \to F$ is the unique ring homomorphism,
+$\iota(m) = m\cdot 1_F$; ``the field element $x$ \emph{is} the integer $m$'' means
+$x = \iota(m)$. A matrix $A \in M_n(F)$ is \emph{idempotent} if $A^2 = A$.
+
+\section{The factorization argument}\label{sec:factorization}
+
+The four lemmas hold over every field $F$; no property of $\mathbb{R}$ enters before
+Theorem~\ref{thm:main}.
+
+\begin{lemma}[rank factorization]\label{lem:factor}
+Let $A \in M_n(F)$ have rank $r$. Then there exist $B \in M_{n\times r}(F)$ and
+$C \in M_{r\times n}(F)$ such that $A = BC$ and
+$\operatorname{col} B = \operatorname{col} A$; in particular
+$\operatorname{rank} B = r$.
+\end{lemma}
+
+\begin{proof}
+For $r = 0$ take the empty matrices ($A = 0$ because every column of $A$ lies in the
+zero-dimensional $\operatorname{col} A$; both column spaces are $\{0\}$). For $r \ge 1$, choose a basis
+$b_1,\dots,b_r$ of $\operatorname{col} A$ and let $B := [\,b_1 \cdots b_r\,]$; its
+columns being a basis, $\operatorname{col} B = \operatorname{col} A$ and
+$\operatorname{rank} B = r$. Each column $Ae_j$ has unique coordinates
+$c_{1j},\dots,c_{rj}$ in this basis; let $C := (c_{kj})$. Then
+$(BC)e_j = B(Ce_j) = \sum_k c_{kj} b_k = Ae_j$ for every $j$, so $A = BC$.
+\end{proof}
+
+\begin{lemma}[cancellation]\label{lem:cancel}
+Let $B \in M_{n\times r}(F)$ have rank $r$. Then for all
+$X, Y \in M_{r\times m}(F)$: if $BX = BY$ then $X = Y$.
+\end{lemma}
+
+\begin{proof}
+If $Bv = 0$ for some $v \ne 0$, say $v_k \ne 0$, then $b_k$ is a linear combination
+of the other columns, so $\operatorname{col} B$ is spanned by $r-1$ vectors,
+contradicting $\operatorname{rank} B = r$; hence $Bv = 0$ forces $v = 0$. Now
+$B(X - Y) = 0$ makes every column of $X - Y$ such a $v$.
+\end{proof}
+
+\begin{lemma}[the crux]\label{lem:cb}
+Let $A \in M_n(F)$ be idempotent of rank $r$, and let $A = BC$ be a factorization as
+in Lemma~\ref{lem:factor}. Then $AB = B$ and $CB = I_r$.
+\end{lemma}
+
+\begin{proof}
+For $v \in \operatorname{col} A$, say $v = Aw$, idempotence gives
+$Av = A^2w = Aw = v$: the matrix $A$ fixes its column space pointwise. Each column
+$Be_j$ lies in $\operatorname{col} B = \operatorname{col} A$
+(Lemma~\ref{lem:factor}; for $r=0$ there is nothing to prove), so
+$(AB)e_j = A(Be_j) = Be_j$ for all $j$, i.e.\ $AB = B$. Then
+\[
+  B(CB) \;=\; (BC)B \;=\; AB \;=\; B \;=\; B\,I_r,
+\]
+and Lemma~\ref{lem:cancel} cancels $B$ on the left: $CB = I_r$.
+\end{proof}
+
+\begin{lemma}[trace commutation]\label{lem:trace}
+For $M \in M_{n\times r}(F)$ and $N \in M_{r\times n}(F)$:
+$\operatorname{tr}(MN) = \operatorname{tr}(NM)$.
+\end{lemma}
+
+\begin{proof}
+Both sides equal the finite sum $\sum_{i=1}^{n}\sum_{k=1}^{r} M_{ik}N_{ki}$, by
+expanding the diagonal entries and exchanging the two finite summations; for $n = 0$
+or $r = 0$ both sides are $0$.
+\end{proof}
+
+\begin{proposition}[characteristic-free form]\label{prop:field}
+Let $F$ be any field and $A \in M_n(F)$ idempotent. Then
+$\operatorname{tr} A = \iota(\operatorname{rank} A)$ in $F$.
+\end{proposition}
+
+\begin{proof}
+Let $r := \operatorname{rank} A$ and factor $A = BC$ by Lemma~\ref{lem:factor}. By
+Lemmas~\ref{lem:cb} and~\ref{lem:trace},
+\[
+  \operatorname{tr} A
+  \;=\; \operatorname{tr}(BC)
+  \;=\; \operatorname{tr}(CB)
+  \;=\; \operatorname{tr}(I_r)
+  \;=\; r\cdot 1_F
+  \;=\; \iota(r). \qedhere
+\]
+\end{proof}
+
+\begin{theorem}\label{thm:main}
+Let $n \ge 0$ be an integer and let $A \in M_n(\mathbb{R})$ satisfy $A^2 = A$. Then
+\[
+  \operatorname{tr} A \;=\; \operatorname{rank} A ,
+\]
+i.e.\ $\operatorname{tr} A = \iota(\operatorname{rank} A)$; in particular
+$\operatorname{tr} A$ is a nonnegative integer, uniquely equal to
+$\operatorname{rank} A$, and $0 \le \operatorname{tr} A \le n$.
+\end{theorem}
+
+\begin{proof}
+Proposition~\ref{prop:field} over $F = \mathbb{R}$ gives
+$\operatorname{tr} A = \iota(r)$ with $r = \operatorname{rank} A$. Since $\mathbb{R}$
+is an ordered field, $m \cdot 1_\mathbb{R} > 0$ for every integer $m \ge 1$; hence
+$\iota$ is injective (so the integer with $\iota(m) = \operatorname{tr} A$ is unique,
+and it is $r \ge 0$) and order-preserving (so $0 \le r \le n$ gives
+$\iota(0) \le \iota(r) \le \iota(n)$, i.e.\ $0 \le \operatorname{tr} A \le n$).
+\end{proof}
+
+\begin{remark}[exact scope]\label{rem:scope}
+Idempotence is consumed exactly once (the first sentence of Lemma~\ref{lem:cb}'s
+proof), and the passage from Proposition~\ref{prop:field} to Theorem~\ref{thm:main}
+is the only step that uses a property of $\mathbb{R}$ beyond the field axioms
+alone --- its characteristic and, for the bound, its order. Over $F = \mathbb{F}_p$ the
+proposition still holds, and the theorem's reading genuinely fails: $A = I_p$ is
+idempotent with $\operatorname{tr} A = p \cdot 1 = 0$ while
+$\operatorname{rank} A = p$. What breaks first is the injectivity of $\iota$ (and the order clause has no
+analogue over $\mathbb{F}_p$ at all).
+No symmetry, orthogonality, or diagonalizability of $A$ is assumed anywhere; oblique
+idempotents are covered without change.
+\end{remark}
+
+\section{Verification}\label{sec:verification}
+
+The proof above was produced and audited as a 19-row dependency ledger: one claim per
+row with its exact prerequisites, over a conventions row fixed once, developed by one
+automated prover role and attacked over two rounds by an independent automated referee
+role. Round one raised one substantive objection --- a citation whose printed location
+could not be verified, resolved by replacing the citation with the self-contained
+construction now inside Lemma~\ref{lem:factor} --- and the ledger closed in round two
+with no fatal or gap-level objections, after a whole-graph audit of acyclicity and row
+interfaces; its eight remaining nitpicks --- two of them regressions introduced by the
+round-one repairs --- were applied after closure.
+The factorization chain was replayed numerically on 400 random idempotent
+instances, with a 200-instance deliberately oblique rerun and a 500-pair test of the
+trace commutation including the degenerate shapes $n = 0$ and $r = 0$; the identity
+itself was separately checked at $n = 0$, $A = 0$, and $A = I$ --- about 1{,}100
+instances in the deposited probes in total, plus a 4{,}000-instance referee screen
+recorded in the debate report. A necessity probe confirmed that dropping idempotence
+breaks $CB = I_r$ on every sampled instance. The crux inference --- $CB = I_r$ from
+$A = BC$, $AB = B$, and cancellation, i.e.\ Lemma~\ref{lem:cb}'s second half --- was
+additionally checked by a proof-assistant kernel as a standalone certificate whose
+hypotheses are the prior ledger rows, with the standard three-axiom audit and nothing
+else. Finally, the displayed identity of Theorem~\ref{thm:main} is formalized and
+kernel-checked end to end, with no unproved hypotheses and exactly the standard three
+axioms in its audit (the theorem's ``in particular'' consequences are immediate from
+the identity and are not separately formalized);
+the formal proof reaches the statement through the proof assistant library's
+projection-trace machinery --- structurally the spectral viewpoint of the route this
+campaign retired, rather than the factorization route printed above --- so discovery
+and certification took legitimately different roads, and both are part of the record.
+The full campaign record --- the deposited experiment scripts, the debate
+conclusions, and both certified files with their audits --- is in the repository cited
+on the title page.
+
+\section{Outlook}\label{sec:outlook}
+
+Two items remain open on the formal side, neither affecting the theorem's status.
+First, the kernel-checked proof certifies Theorem~\ref{thm:main} through the library's
+projection machinery; formalizing the factorization route printed in
+Section~\ref{sec:factorization} --- the rank factorization of
+Lemma~\ref{lem:factor}, including its
+$\operatorname{col} B = \operatorname{col} A$ clause, and the independence argument
+of Lemma~\ref{lem:cancel} --- would
+make the discovery-side proof itself machine-checked, not only its conclusion and its
+crux. Second, Proposition~\ref{prop:field}, the characteristic-free form over an
+arbitrary field, is stated and proved here but was not formalized; it is the natural
+next anchor. The mathematical content of this note is complete as stated, and
+Remark~\ref{rem:scope} delimits the theorem exactly.
+
+\end{document}

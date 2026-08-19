@@ -1,0 +1,4 @@
+interface:
+  display_name: "Auto Research"
+  short_description: "Resolve an open question in verified Lean"
+  default_prompt: "Use $auto-research to settle and formalize this open mathematical question."

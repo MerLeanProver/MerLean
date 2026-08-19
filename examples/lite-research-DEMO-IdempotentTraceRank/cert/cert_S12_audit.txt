@@ -1,0 +1,6 @@
+cert_S12 — compile-fix result (hypothesis-mode certificate for ledger row S12)
+status: clean (first attempt, no edits)
+compiler output (verbatim, entire output):
+  'cert_S12' depends on axioms: [propext, Classical.choice, Quot.sound]
+0 errors, 0 warnings, no sorry; AXIOM_POLICY=strict satisfied.
+wall clock: 27.4 s; workspace: external Mathlib checkout, copy-in pattern, temp file removed.
