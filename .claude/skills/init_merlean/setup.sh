@@ -104,8 +104,11 @@ fi
 # --- 2. .env / OpenAI key --------------------------------------------------------------
 echo "[2/4] OpenAI key ..."
 env_openai_key() {
+  # a real key line, NOT the literal template placeholder (sk-... / sk-your-key-here)
   [ -f "$1" ] || return 1
-  grep -Eq '^[[:space:]]*OPENAI_API_KEY[[:space:]]*=[[:space:]]*"?sk-' "$1"
+  grep -E '^[[:space:]]*OPENAI_API_KEY[[:space:]]*=[[:space:]]*"?sk-' "$1" \
+    | grep -Ev '=[[:space:]]*"?sk-(\.\.\.|your-key-here)"?[[:space:]]*$' \
+    | grep -q .   # (not -qv in one grep: BSD grep -qv exits 0 on empty input)
 }
 if [ -n "$OPENAI_KEY" ]; then
   printf '# Mem0-g environment - OpenAI API key (written by init_merlean).\nOPENAI_API_KEY=%s\n' "$OPENAI_KEY" > "$ROOT_ENV"

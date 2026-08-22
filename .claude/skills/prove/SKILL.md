@@ -1,6 +1,6 @@
 ---
 name: prove
-description: Prove mode — fill the `sorry`/`admit` placeholders in an existing Lean file with real proofs, using the Mem0-g plan graph + compile-fix subagent. Run in the MAIN context. Use when asked to "prove the sorries", complete unfinished declarations, or formalize a stubbed Lean file. Success is mechanical: clean build with no residual sorry/admit/axiom.
+description: "Prove mode — fill the `sorry`/`admit` placeholders in an existing Lean file with real proofs, using the Mem0-g plan graph + compile-fix subagent. Run in the MAIN context. Use when asked to \"prove the sorries\", complete unfinished declarations, or formalize a stubbed Lean file. Success is mechanical: clean build with no residual sorry/admit/axiom."
 ---
 
 # prove — decompose a sorry into a plan, then prove it node by node

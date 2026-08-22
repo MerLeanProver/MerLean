@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "lean-lsp": {
+      "command": "__VENV_PY__",
+      "args": ["-m", "lean_lsp_mcp"],
+      "env": { "PYTHONUTF8": "1" }
+    }
+  }
+}

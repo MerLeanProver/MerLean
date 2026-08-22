@@ -17,16 +17,31 @@ os.environ.setdefault("MEM0_TELEMETRY", "False")
 
 def _load_api_key() -> None:
     """Find the OpenAI key: an env var already set, else the nearest `.env`
-    walking up from this file (e.g. the shared `.env`)."""
+    walking up from the current working directory (the user's project — checked
+    first so a project key beats any stray one near an installed-plugin copy of
+    this package), else the nearest `.env` walking up from this file (e.g. the
+    shared `.env` in a clone-mode checkout). Neither walk climbs above the
+    user's home directory (home itself is still checked)."""
     if os.getenv("OPENAI_API_KEY"):
         return
-    here = Path(__file__).resolve()
-    for p in [here.parent, *here.parents]:
-        cand = p / ".env"
-        if cand.exists():
-            load_dotenv(cand)
-            if os.getenv("OPENAI_API_KEY"):
-                return
+    home = Path.home().resolve()
+
+    def _walk(start: Path) -> None:
+        for p in [start, *start.parents]:
+            if p != home and p in home.parents:
+                break  # never climb above the user's home directory
+            cand = p / ".env"
+            if cand.exists():
+                load_dotenv(cand)
+                if os.getenv("OPENAI_API_KEY"):
+                    return
+            if p == home:
+                break
+
+    _walk(Path.cwd().resolve())
+    if os.getenv("OPENAI_API_KEY"):
+        return
+    _walk(Path(__file__).resolve().parent)
 
 
 _load_api_key()

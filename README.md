@@ -16,7 +16,7 @@ into a paper through a gated 8-step protocol.
 
 |  | **Claude Code** | **Codex** | *(future: opencode, …)* |
 |---|---|---|---|
-| **Research agent** — formalize / prove / auto-research / lite-research | [`.claude/`](.claude) (live at the repo root — the repo *is* the Claude Code install) | [`research-agent/codex/`](research-agent/codex) | one folder per runtime |
+| **Research agent** — formalize / prove / auto-research / lite-research | [`.claude/`](.claude) (live at the repo root — the repo *is* the Claude Code install) *or* installable as a plugin ([`.claude-plugin/`](.claude-plugin) + [`skills/`](skills) + [`agents/`](agents)) | [`research-agent/codex/`](research-agent/codex) | one folder per runtime |
 | **Paper-writing agent** — campaign → gated 8-step paper | [`paper-writing-agent/claude/`](paper-writing-agent/claude) (invoked via `/write-paper`) | [`paper-writing-agent/codex/`](paper-writing-agent/codex) | one folder per runtime |
 
 Each version of an agent implements the same modes, roles, and artifacts; only the
@@ -27,7 +27,8 @@ Codex runs the same roles as child skills). Overviews:
 
 The repo is **install-ready as checked out** for the Claude Code versions: `.claude/` (all
 skills, subagents, settings) is tracked in git, and `src/` holds the plan-graph package. One
-skill — `/init_merlean` — prepares the runtime.
+skill — `/init_merlean` — prepares the runtime. The same repo also serves as a **Claude Code
+plugin marketplace** (see Quick start) for installing MerLean into any project without cloning.
 
 ---
 
@@ -55,6 +56,20 @@ claude
 That one skill does everything: builds the shared `.venv` from `src/requirements.txt`, generates
 `.mcp.json`, creates the root Lean workspace files if missing, and runs `lake update` +
 `lake exe cache get` + `lake build`. Re-running it is safe — it is idempotent.
+
+**Install as a Claude Code plugin (alternative to the clone).** The repo doubles as its own
+plugin marketplace, so MerLean can instead be installed into *any* project:
+
+```
+/plugin marketplace add MerLeanProver/MerLean
+/plugin install merlean@merlean
+```
+
+Then start Claude Code **in your math project directory** and run `/merlean:init_merlean`
+there — it prepares the runtime (`.venv`, `.env`, `.mcp.json`, Lean workspace) in that
+directory, while the skills, subagents, and plan-graph code stay inside the plugin. Skills are
+namespaced (`/merlean:auto-research`, `/merlean:prove`, …); the bare names also resolve when
+unambiguous. Steps 4–5 below are the same in both modes.
 
 **4. Provide an OpenAI API key when it asks.**
 
@@ -200,6 +215,9 @@ If you use MerLean or build on this result, please cite:
                           #   formalizeproblem, plan-graph, write-paper
     init_merlean/         #   setup skill: SKILL.md + setup.sh + templates/
   settings.json
+.claude-plugin/           # plugin manifest + marketplace (install without cloning — Quick start)
+skills/                   # the same skills, plugin edition (paths via ${CLAUDE_PLUGIN_ROOT})
+agents/                   # the same five subagents, plugin edition
 src/
   cli.py                  # CLI launcher
   plan_store/             # the plan-graph package (store, lean_sync, search, tests, ...)

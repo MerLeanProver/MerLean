@@ -1,6 +1,6 @@
 ---
 name: plan-graph
-description: Read, edit, and SEMANTICALLY SEARCH the formalization statement plan stored in the Mem0-g plan graph (the replacement for statements.json). Use whenever you need to inspect, query, or modify statements, dependencies, status, or informal notes; run the Lean dependency sync; or find statements/notes by MEANING (LeanSearch-v2-style two-stage retrieval: OpenAI embedding recall → LLM rerank) — e.g. to check whether a statement already exists before adding one, or to surface prior research knowledge. Wraps the `plan_store` CLI.
+description: "Read, edit, and SEMANTICALLY SEARCH the formalization statement plan stored in the Mem0-g plan graph (the replacement for statements.json). Use whenever you need to inspect, query, or modify statements, dependencies, status, or informal notes; run the Lean dependency sync; or find statements/notes by MEANING (LeanSearch-v2-style two-stage retrieval: OpenAI embedding recall → LLM rerank) — e.g. to check whether a statement already exists before adding one, or to surface prior research knowledge. Wraps the `plan_store` CLI."
 ---
 
 # plan-graph — drive the Mem0-g statement plan
