@@ -1,20 +1,18 @@
 #!/usr/bin/env bash
 # init-merlean — one-command setup for the Codex MerLEAN plugin.
 # skills/ and src/ are tracked in the plugin, so nothing is mirrored: this script
-# only prepares the RUNTIME — the shared .venv, the root .mcp.json, the .env key file, and the
+# only prepares the RUNTIME — the shared .venv, the root .mcp.json, local environment detection, and the
 # root Lean + Mathlib workspace. Cross-platform (Linux/macOS, and Windows via Git Bash).
 #
 #   full setup:            bash skills/init-merlean/scripts/setup.sh
-#   with a key:            bash skills/init-merlean/scripts/setup.sh --openai-key sk-...
 #   skip the slow parts:   bash skills/init-merlean/scripts/setup.sh --skip-mathlib
 #
 # Non-interactive by design (safe to run from a Codex skill). Re-running is idempotent.
 set -euo pipefail
 
-SKIP_VENV=0 ; SKIP_MATHLIB=0 ; OPENAI_KEY=""
+SKIP_VENV=0 ; SKIP_MATHLIB=0
 while [ $# -gt 0 ]; do
   case "$1" in
-    --openai-key)   OPENAI_KEY="$2"; shift 2 ;;
     --skip-venv)    SKIP_VENV=1; shift ;;
     --skip-mathlib) SKIP_MATHLIB=1; shift ;;
     *) echo "unknown arg: $1" >&2; exit 2 ;;
@@ -106,18 +104,15 @@ fi
 echo "[2/4] OpenAI key ..."
 env_openai_key() {
   [ -f "$1" ] || return 1
-  grep -Eq '^[[:space:]]*OPENAI_API_KEY[[:space:]]*=[[:space:]]*"?sk-' "$1"
+  grep -Eq '^[[:space:]]*OPENAI_API_KEY[[:space:]]*=[[:space:]]*"?sk-[A-Za-z0-9_-]{8,}' "$1"
 }
-if [ -n "$OPENAI_KEY" ]; then
-  printf '# Mem0-g environment - OpenAI API key (written by init_merlean).\nOPENAI_API_KEY=%s\n' "$OPENAI_KEY" > "$ROOT_ENV"
-  ok "wrote .env with the provided OPENAI_API_KEY"
-elif env_openai_key "$ROOT_ENV"; then
+if env_openai_key "$ROOT_ENV"; then
   ok ".env already has an OPENAI_API_KEY - preserved"
 elif [ -n "${OPENAI_API_KEY:-}" ]; then
   ok "OPENAI_API_KEY found in the environment (no .env needed)"
 else
   [ -f "$ROOT_ENV" ] || cp -f "$TPL/.env.example" "$ROOT_ENV"
-  warn "no key found - .env is a template; add OPENAI_API_KEY before running plan-graph commands"
+  warn "no key found - use PLAN_OFFLINE=1, or configure OPENAI_API_KEY outside the conversation"
 fi
 
 # --- 3. root config + Lean workspace ---------------------------------------------------

@@ -27,8 +27,9 @@ Codex runs the same roles as child skills). Overviews:
 
 The repo is **install-ready as checked out** for the Claude Code versions: `.claude/` (all
 skills, subagents, settings) is tracked in git, and `src/` holds the plan-graph package. One
-skill — `/init_merlean` — prepares the runtime. The same repo also serves as a **Claude Code
-plugin marketplace** (see Quick start) for installing MerLean into any project without cloning.
+skill — `/init_merlean` — prepares the runtime. The same repo also serves as both a **Claude Code
+plugin marketplace** and a **Codex plugin marketplace** (see Quick start) for installing MerLean
+into any project without cloning.
 
 ---
 
@@ -71,18 +72,40 @@ directory, while the skills, subagents, and plan-graph code stay inside the plug
 namespaced (`/merlean:auto-research`, `/merlean:prove`, …); the bare names also resolve when
 unambiguous. Steps 4–5 below are the same in both modes.
 
-**4. Provide an OpenAI API key when it asks.**
+**Install the Codex plugins (alternative to the clone).** Add this repository as a Codex
+marketplace, then install the research agent and, optionally, the paper-writing agent:
+
+```bash
+codex plugin marketplace add MerLeanProver/MerLean
+codex plugin add lite-codex@merlean
+codex plugin add paper-writing-codex@merlean
+```
+
+The first package provides the formalization, proving, auto-research, lite-research, and plan-graph
+skills. The second provides the gated paper-writing and read-only paper-audit skills. Their Codex
+manifests retain the MerLean authorship and Apache-2.0 license metadata from `LICENSE` and `NOTICE`.
+Both packages are required for the complete MerLean feature set. Release contents are built only
+from Git-tracked files and checked by `scripts/audit_codex_release.py`; local `.env`, `.venv`,
+`.lake`, plan data, caches, and credentials are never part of the marketplace distribution. See
+the [privacy policy](PRIVACY.md), [terms](TERMS.md), and [support policy](SUPPORT.md).
+
+**4. Choose the plan-graph backend.**
 
 > [!IMPORTANT]
-> **An OpenAI API key is required.** `/init_merlean` will ask for one if it cannot already find
-> a key, and store it in `.env` (git-ignored, never committed). Get one at
-> [platform.openai.com/api-keys](https://platform.openai.com/api-keys).
+> **Never paste an API key into a chat or command argument.** For the online semantic plan graph,
+> configure `OPENAI_API_KEY` in your shell environment or in a local `.env` file that is ignored by
+> Git. MerLean preserves that local configuration but does not distribute or upload it. Get a key
+> at [platform.openai.com/api-keys](https://platform.openai.com/api-keys).
 >
 > **What it is for.** The plan graph. Every statement and research note is embedded
 > (`text-embedding-3-large`) so the system can search its own plan by meaning — this is how it
 > avoids re-proving lemmas it already has and how it recalls prior findings. A small model
 > (`gpt-4o-mini`) handles the rest of the graph's bookkeeping: reranking search results,
-> extracting memory facts, and writing plan summaries. The system cannot run without it.
+> extracting memory facts, and writing plan summaries.
+>
+> **Credential-free alternative.** Prefix plan commands with `PLAN_OFFLINE=1` to use the complete
+> deterministic local backend. Offline mode makes no embedding, reranking, vector-store, or
+> summary API calls.
 >
 > **What it costs — about $5 per month** of steady use. That is separate from, and far smaller
 > than, your Claude Code subscription. Nearly all of it is the `gpt-4o-mini` calls; embedding a
@@ -216,6 +239,7 @@ If you use MerLean or build on this result, please cite:
     init_merlean/         #   setup skill: SKILL.md + setup.sh + templates/
   settings.json
 .claude-plugin/           # plugin manifest + marketplace (install without cloning — Quick start)
+.agents/plugins/          # Codex marketplace catalog for the two Codex-native plugins
 skills/                   # the same skills, plugin edition (paths via ${CLAUDE_PLUGIN_ROOT})
 agents/                   # the same five subagents, plugin edition
 src/

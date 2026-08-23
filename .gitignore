@@ -14,7 +14,19 @@
 # --- secrets (never commit) ---
 .env
 **/.env
+**/.env.*
+!.env.example
+!**/.env.example
 *.key
+*.pem
+*.p12
+*.pfx
+*.jks
+*.keystore
+.netrc
+.npmrc
+credentials*.json
+secrets*.json
 
 # --- python venvs & caches ---
 .venv/
@@ -27,6 +39,9 @@ __pycache__/
 .lake/
 **/.lake/
 .DS_Store
+
+# --- local release products ---
+/dist/
 
 # LaTeX build artifacts (all campaigns; PDFs stay tracked as deliverables)
 examples/*/paper/*.aux

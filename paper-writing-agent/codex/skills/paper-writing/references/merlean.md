@@ -4,7 +4,7 @@ Prefer an existing graph/export.
 
 ## Plan export
 
-`<project>/FermionGaussian_data/statements.json`-style exports contain
+`<project>/MainTheorem_data/statements.json`-style exports contain
 `{statements:[{id,type,name,content,dependencies,...}]}`. Dependencies point from each node to its
 prerequisites. Pass selected terminal IDs explicitly:
 

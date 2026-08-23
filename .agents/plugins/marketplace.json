@@ -1,0 +1,32 @@
+{
+  "name": "merlean",
+  "interface": {
+    "displayName": "MerLean"
+  },
+  "plugins": [
+    {
+      "name": "lite-codex",
+      "source": {
+        "source": "local",
+        "path": "./research-agent/codex"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Developer Tools"
+    },
+    {
+      "name": "paper-writing-codex",
+      "source": {
+        "source": "local",
+        "path": "./paper-writing-agent/codex"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Productivity"
+    }
+  ]
+}

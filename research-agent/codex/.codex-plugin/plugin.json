@@ -3,7 +3,8 @@
   "version": "0.1.0",
   "description": "Codex-native MerLEAN: autonomous Lean 4 formalization, proving, and research modes over a persistent plan graph.",
   "author": {
-    "name": "MerLeanProver contributors"
+    "name": "Jinzheng Li, Zeru Zhu, and Yuanjie Ren",
+    "url": "https://github.com/MerLeanProver"
   },
   "homepage": "https://github.com/MerLeanProver/MerLean",
   "repository": "https://github.com/MerLeanProver/MerLean",
@@ -14,9 +15,15 @@
     "displayName": "MerLEAN for Codex",
     "shortDescription": "Formalize, prove, or research mathematics in Lean 4",
     "longDescription": "A Codex-native port of every MerLEAN mode and specialist role, with persistent semantic proof memory, parallel subagents, adversarial audits, and kernel-level soundness gates.",
-    "developerName": "MerLeanProver contributors",
+    "developerName": "MerLeanProver",
     "category": "Developer Tools",
     "capabilities": ["Research", "Lean 4", "Multi-agent", "Write"],
+    "websiteURL": "https://github.com/MerLeanProver/MerLean",
+    "privacyPolicyURL": "https://github.com/MerLeanProver/MerLean/blob/master/PRIVACY.md",
+    "termsOfServiceURL": "https://github.com/MerLeanProver/MerLean/blob/master/TERMS.md",
+    "brandColor": "#173B67",
+    "composerIcon": "./assets/merlean-logo.png",
+    "logo": "./assets/merlean-logo.png",
     "defaultPrompt": [
       "Formalize this paper completely in Lean 4.",
       "Prove every sorry in this Lean file.",

@@ -1,6 +1,6 @@
 ---
 name: init-merlean
-description: Set up the standalone Codex MerLEAN plugin — build its Python .venv from src/requirements.txt, write the plugin .mcp.json for lean-lsp, ensure an OpenAI key in .env, and optionally prepare the bundled Lean + Mathlib workspace. Use when asked to install, set up, initialize, or redeploy this Codex MerLEAN port, or when a fresh copy needs its runtime prepared.
+description: Set up the standalone Codex MerLEAN plugin — build its Python .venv from src/requirements.txt, write the plugin .mcp.json for lean-lsp, detect a preconfigured OpenAI key or select offline mode, and optionally prepare the bundled Lean + Mathlib workspace. Use when asked to install, set up, initialize, or redeploy this Codex MerLEAN port, or when a fresh copy needs its runtime prepared.
 ---
 
 # init-merlean — one-command Codex MerLEAN setup
@@ -11,20 +11,19 @@ script:
 
 ```
 bash <PLUGIN_ROOT>/skills/init-merlean/scripts/setup.sh \
-  [--openai-key sk-...] [--skip-venv] [--skip-mathlib]
+  [--skip-venv] [--skip-mathlib]
 ```
 
 ## Procedure
 
 1. **Backend first.** The Codex mode name `init-merlean` is the normalized spelling of the
-   upstream Claude command `init_merlean`. Check whether an OpenAI key is already reachable:
-   `.env` at the repo root
-   contains `OPENAI_API_KEY=sk-...`, or `OPENAI_API_KEY` is set in the environment. If neither,
-   ask the user for their key only when they want the online Mem0-g embeddings/reranker. They may
-   instead use the complete deterministic fallback by prefixing plan calls with `PLAN_OFFLINE=1`.
+   upstream Claude command `init_merlean`. Check whether `OPENAI_API_KEY` is already available in
+   the environment or an existing ignored `.env`. **Never ask the user to paste a key into chat,
+   a prompt, or a command argument.** If no key is preconfigured, use the complete deterministic
+   fallback by prefixing plan calls with `PLAN_OFFLINE=1`. If the user later wants online Mem0-g,
+   tell them to configure the environment variable or ignored `.env` outside the conversation.
 2. **Run the script** (from the repo root):
-   - key in hand → `bash <PLUGIN_ROOT>/skills/init-merlean/scripts/setup.sh --openai-key <KEY>`
-   - key already reachable, or user skipped → `bash <PLUGIN_ROOT>/skills/init-merlean/scripts/setup.sh`
+   - `bash <PLUGIN_ROOT>/skills/init-merlean/scripts/setup.sh`
    - The Mathlib step (`lake update` + `lake exe cache get` + `lake build`) can take many
      minutes on first run — run it with a generous timeout or in the background. Pass
      `--skip-mathlib` only if the user asks for a quick/venv-only setup.
@@ -41,7 +40,7 @@ bash <PLUGIN_ROOT>/skills/init-merlean/scripts/setup.sh \
 | step | action |
 |---|---|
 | venv | build `.venv/` from `src/requirements.txt` (host python ≥ 3.9, else `uv` fallback) |
-| .env | write from `--openai-key`, else preserve an existing key, else leave the template |
+| .env | preserve an existing ignored file; otherwise leave a local placeholder and use offline mode |
 | .mcp.json | created from `templates/mcp.json` when absent, otherwise preserved — registers the `lean-lsp` MCP server, run from the venv python |
 | Lean workspace | copy `lean-toolchain` / `lakefile.toml` / `MerLeanExperiment.lean` to the root if missing, then `lake update` + `lake exe cache get` + `lake build` (toolchain auto-synced to Mathlib's) |
 | checks | `lean-lsp-mcp` import, `lake` on PATH, `plan_store` import |

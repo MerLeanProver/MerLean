@@ -55,8 +55,8 @@ class VersioningTests(unittest.TestCase):
                 "paper-v0.tex": "paper-v1.tex",
                 "paper-v9.tex": "paper-v10.tex",
                 "paper-v2-draft.tex": "paper-v2-draft-v1.tex",
-                "sudden death of non-Gaussianity in fermionic system.tex":
-                    "sudden death of non-Gaussianity in fermionic system-v1.tex",
+                "a manuscript with spaces.tex":
+                    "a manuscript with spaces-v1.tex",
             }
             for incoming, expected in cases.items():
                 source = root / incoming
