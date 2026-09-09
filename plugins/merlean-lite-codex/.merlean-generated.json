@@ -1,0 +1,357 @@
+{
+  "directories": {
+    ".": 493,
+    ".codex-plugin": 493,
+    "assets": 493,
+    "docs": 493,
+    "ports": 493,
+    "roles": 493,
+    "scripts": 493,
+    "skills": 493,
+    "skills/merlean-lite": 493,
+    "skills/merlean-lite/agents": 493,
+    "src": 493,
+    "src/paper_writing_codex": 493,
+    "src/plan_store": 493,
+    "src/plan_store/_vendor": 493,
+    "templates": 493,
+    "workflows": 493,
+    "workflows/paper": 493
+  },
+  "files": {
+    ".codex-plugin/plugin.json": {
+      "mode": 420,
+      "sha256": "520f78634f88d29fb253153a63d19d9972f442eff1eaf1a5325d6e026edb9d64"
+    },
+    "AGENTS.md": {
+      "mode": 420,
+      "sha256": "8c2403deb17cf09ca72a12ffa203a0c888fa02e8241c11bf37fa9c22044d0b67"
+    },
+    "LICENSE": {
+      "mode": 420,
+      "sha256": "75f1803505bb5337042bd4a35badb2c08321e9949ee065cdbf260202e86a343d"
+    },
+    "NOTICE": {
+      "mode": 420,
+      "sha256": "01ee8fa8769d3b7d8414961cb14d17a8d6973e93464c0a886076444b8bfaf006"
+    },
+    "PRIVACY.md": {
+      "mode": 420,
+      "sha256": "d1e4efcce794e7441c571efb417b6c6bba574af0f36f5c470694d5fd5a70151b"
+    },
+    "README.md": {
+      "mode": 420,
+      "sha256": "f3767abbbfed7f278d7c05427d531ffd9f4d537117ee7597f2f5d7840e5791ea"
+    },
+    "SECURITY.md": {
+      "mode": 420,
+      "sha256": "038be8b9f2630ee837c7dde27ecace0070c2bb303e5510ab17dc8013c2812cb1"
+    },
+    "SUPPORT.md": {
+      "mode": 420,
+      "sha256": "708138c93d4a998d41ccd54a20271d779f0da9b818659cd0c1df7710f08eab9a"
+    },
+    "TERMS.md": {
+      "mode": 420,
+      "sha256": "9ada419112cf4fe1e61af549917a0be783c4735acdb390c6e76c5e97c6f7ae9b"
+    },
+    "assets/merlean-logo.png": {
+      "mode": 420,
+      "sha256": "02914cd1e21d8d141a5ec533633187241852298740be0881dc920b733a04ef2a"
+    },
+    "assets/merlean-logo.svg": {
+      "mode": 420,
+      "sha256": "67ca57035c15ba08df83a1513bfca7c366a6981acd89f9cbd33a707458b1cb40"
+    },
+    "docs/trust-and-instantiation-gates.md": {
+      "mode": 420,
+      "sha256": "0765d198201d873e793a4247d4c732fa7cd328cd0595a69885eb5ed21d5f5e6d"
+    },
+    "ports/claude.md": {
+      "mode": 420,
+      "sha256": "a91bae82eb63c3af52fa93cb9690ea5252574209cd1dab881cd3759e29021930"
+    },
+    "ports/codex.md": {
+      "mode": 420,
+      "sha256": "4956e4999eff96574ff16f12b703bcb292d1801177b7884b5e6cfedead849434"
+    },
+    "roles/compile-fix.md": {
+      "mode": 420,
+      "sha256": "1e1dd7cdfe3996c9344b1d1ca3c8532e9b792423968d1776034916def518a4f6"
+    },
+    "roles/explore.md": {
+      "mode": 420,
+      "sha256": "e14bcc4664603fcd0250e32ad7b3b6c7d6dfc7e52c3a6f7b4337770b841b34dd"
+    },
+    "roles/nl-prover.md": {
+      "mode": 420,
+      "sha256": "d54ea00bcd9695c7022583630671130e8f6c5ecdbfdbb1a854e6fb7caced1b54"
+    },
+    "roles/route-scout.md": {
+      "mode": 420,
+      "sha256": "c42cba2fbea9b57f68f9780061d0a28261188711df097d153488ab2316b379eb"
+    },
+    "roles/skeptic.md": {
+      "mode": 420,
+      "sha256": "f5bec4081fdf021d14892e4a6e51cef85c54d8c4f71bb21dfa9a437892289019"
+    },
+    "scripts/audit-research-grade": {
+      "mode": 493,
+      "sha256": "5ba9cedbeecb646ed65595cc21597df03a502818a7170380c4659ea319eb4a07"
+    },
+    "scripts/audit_research_grade.py": {
+      "mode": 493,
+      "sha256": "8b3442e6c87c24abf0871e226e8b6ede91b6c1c1ea3e1a000d9f50269a4bbe06"
+    },
+    "scripts/merlean": {
+      "mode": 493,
+      "sha256": "8b811bb556486f93e7b8ce358e19a9a18c1a722accc42f2e1236938f6760b4d4"
+    },
+    "scripts/merlean-agent": {
+      "mode": 493,
+      "sha256": "df7fb12bfdb4a43f21f8d8ef614a9ce5121fccb5a11d33c080a52b715777ed55"
+    },
+    "scripts/paperctl": {
+      "mode": 493,
+      "sha256": "639fc005ee4fa27cc61b44f1edf194cb47be69ca507d14add7643e283563df6c"
+    },
+    "scripts/setup.sh": {
+      "mode": 493,
+      "sha256": "8bb4c6d9d02fa2e8788f7fd853ebc7e69d4fc89516a01f87229be9b3398e79db"
+    },
+    "skills/merlean-lite/SKILL.md": {
+      "mode": 420,
+      "sha256": "f9f948e0d5053103bfcbc58e216637737b76b88de87ee031adc81a13fbcff7a1"
+    },
+    "skills/merlean-lite/agents/openai.yaml": {
+      "mode": 420,
+      "sha256": "e225b47a1a9e0fa04fc8e657b12b4b5d5e6afdb8038d448d67af190dfbaafc6d"
+    },
+    "src/cli.py": {
+      "mode": 420,
+      "sha256": "58cdd116919889154e6f880749ba947978ecefd3f4769f0e6ff0175ec1f9da5b"
+    },
+    "src/offline_cli.py": {
+      "mode": 420,
+      "sha256": "f0205adb6cf41e56986ce9cc7891d6992d1aaa2df7b849b0e57d0b63f3161ed7"
+    },
+    "src/paper_writing_codex/__init__.py": {
+      "mode": 420,
+      "sha256": "5083b5c922080804f3c0f28b794601c8476677a5c7c6a1c7bb5f5bcd1e7ec2fb"
+    },
+    "src/paper_writing_codex/cli.py": {
+      "mode": 420,
+      "sha256": "205b7d28b8ecf4796348fecea03e57ea576f0da104b5076b1afc7c478601cb6c"
+    },
+    "src/paper_writing_codex/coverage.py": {
+      "mode": 420,
+      "sha256": "f1cdef04dd71e1329d68ab054264d49da26ef116ed04fd882ec3e4a69fa1a444"
+    },
+    "src/paper_writing_codex/critical_path.py": {
+      "mode": 420,
+      "sha256": "79d1da75cf885f017cd6f8d42f9d24284826408a2d6866b7bee3bc74089ef1ab"
+    },
+    "src/paper_writing_codex/safe_extract.py": {
+      "mode": 420,
+      "sha256": "ac4531762742023d3ba500caf3f2faf3f0b58f49fa6826441068d873c13c3ed5"
+    },
+    "src/paper_writing_codex/tex_inventory.py": {
+      "mode": 420,
+      "sha256": "37fe2d406911b2b063ca0fdf39ddee5248a10d37db7238c60529b55825354e7d"
+    },
+    "src/paper_writing_codex/versioning.py": {
+      "mode": 420,
+      "sha256": "206ced8ee51bd9aeb5f13f1beff60b88bec9247280e5ab29bc5ef19fa0574237"
+    },
+    "src/paper_writing_codex/workflow.py": {
+      "mode": 420,
+      "sha256": "ea6917643781389b9826e563e47940cf9c1fd86049714c4c31f8d86c64f91464"
+    },
+    "src/plan_store/README.md": {
+      "mode": 420,
+      "sha256": "c1b0e6127188bcdd4dbb0a0d6d3204e97ab5c441d8fa652990a1eb8238c1455a"
+    },
+    "src/plan_store/__init__.py": {
+      "mode": 420,
+      "sha256": "14d06b2b77e3178ea44a5e85c60023f04c7972969c75446b206d23ad6ccd9ba0"
+    },
+    "src/plan_store/__main__.py": {
+      "mode": 420,
+      "sha256": "14a6295c69867470978b2c804a24a430d2fdb31fb17a5f96e329274bdab35e3a"
+    },
+    "src/plan_store/_vendor/__init__.py": {
+      "mode": 420,
+      "sha256": "a902216df0f7f6f1d51474c3bc64e5ee30fe6dd84e50e5da7d992caa9fb3ed87"
+    },
+    "src/plan_store/_vendor/cone.py": {
+      "mode": 420,
+      "sha256": "26bf3060a1dcf854341034f66ce9ecd5227489d7265fd3e782a65021adfcedd0"
+    },
+    "src/plan_store/_vendor/lean_models.py": {
+      "mode": 420,
+      "sha256": "863757bf64108bb0f833ac8a005ad358fd3b00068c6299f7713ceba350170363"
+    },
+    "src/plan_store/_vendor/lean_parser.py": {
+      "mode": 420,
+      "sha256": "dcf3b638ee28cc098838e94127183308127a36575924e157523ef19e7a4b1e66"
+    },
+    "src/plan_store/_vendor/models.py": {
+      "mode": 420,
+      "sha256": "73fc049265f062cee8f3b0d3d6c04c3ac5843071dcb8d8c269cc1c025520e8f3"
+    },
+    "src/plan_store/_vendor/toposort.py": {
+      "mode": 420,
+      "sha256": "08743aaa27abadb5a33510490cfdc4f55b1c295ab2127d36ce642f5e606e10a0"
+    },
+    "src/plan_store/compat.py": {
+      "mode": 420,
+      "sha256": "c883ae6630301eb480107be70f3a21a7149781978c441c8fd2694b2929afbc49"
+    },
+    "src/plan_store/config.py": {
+      "mode": 420,
+      "sha256": "a4f78b8fa80eb815c61fe59d5dbeeef99c6f28c56377a61104b93e3313899d1b"
+    },
+    "src/plan_store/dashboard.py": {
+      "mode": 420,
+      "sha256": "a1e232be9d607b5819aa1c7bdeedf3e0a6c2e29293c0a2cd9017c4525d989669"
+    },
+    "src/plan_store/grade_policy.py": {
+      "mode": 420,
+      "sha256": "98c9fd6c395a88da0935e7cebf8e8e5dde679278f273dc12eb9c4646d61b6f7f"
+    },
+    "src/plan_store/lean_sync.py": {
+      "mode": 420,
+      "sha256": "fd945fdddc92a680069c32e993273dffa6ed862ff96e7c5678c79637e9fca384"
+    },
+    "src/plan_store/offline_store.py": {
+      "mode": 420,
+      "sha256": "a48bff7e8b30bcfdbb781170ac2a5d1846d6ccd1927d2a18d66dc9ac29e29af4"
+    },
+    "src/plan_store/prove.py": {
+      "mode": 420,
+      "sha256": "8c76812a5118cb18c3f9ecb200e0f76ad8a4d5c9fa86522b82f48206b458777b"
+    },
+    "src/plan_store/rerank.py": {
+      "mode": 420,
+      "sha256": "3d057d2daa99133ffc779eda927f16f7ed35589c82d8015108865ef4a683456f"
+    },
+    "src/plan_store/store.py": {
+      "mode": 420,
+      "sha256": "d1768d04d6a46c76acbdb9bcc9194242400ddc4d78494c561cc97c2140629295"
+    },
+    "src/plan_store/summary.py": {
+      "mode": 420,
+      "sha256": "e10668b9b2338057d2211b798de22c5b1500a533be0fb6e4ec633e2c1359abae"
+    },
+    "src/plan_store/visualize.py": {
+      "mode": 420,
+      "sha256": "e555c41cd715e9e0eb7d0a9efee3869f0c608f7276fc8079287e09e64f55f66b"
+    },
+    "src/requirements.txt": {
+      "mode": 420,
+      "sha256": "fb5cbec192914dc6e81e5f6a4a09fa04226c1b6e6b4ba233566d6b755ba19e00"
+    },
+    "src/research_grade.py": {
+      "mode": 420,
+      "sha256": "2fbc83002cb050cbd59993c308bac70d3bb5dfb14cfbd76b02928e1ff415507d"
+    },
+    "templates/.env.example": {
+      "mode": 420,
+      "sha256": "880ecdb59559aa20c16a46e771e31b48492346f0e8461bc1676169a52a8b2dab"
+    },
+    "templates/MerLeanExperiment.lean": {
+      "mode": 420,
+      "sha256": "1015f8f4676a27ea63780b30cc916712232857097b2bdf635dc61cb949c107fb"
+    },
+    "templates/lakefile.toml": {
+      "mode": 420,
+      "sha256": "b0eb5a2f1af71f5a18e7e137d70cc8fe2cdd7545eff3961c3cd6a7b9bee07da3"
+    },
+    "templates/lean-toolchain": {
+      "mode": 420,
+      "sha256": "2b92ea252be0fbc26f70317cdaa7b6411ea634b50d55338cd8c495e4dbf25d1d"
+    },
+    "templates/mcp.json": {
+      "mode": 420,
+      "sha256": "1afe861a080e528c69fecf9da00de19573701d512d65533bb5a93afee08c2d8f"
+    },
+    "workflows/auto-research.md": {
+      "mode": 420,
+      "sha256": "426f0e59356c8f5e68b27bac357211e4683c4fb617491cd0feb9510df0922ad5"
+    },
+    "workflows/common.md": {
+      "mode": 420,
+      "sha256": "e1fb60ba991c1fdc26cdf81c2776338782722f10418a7ecfea7c986016b1c5ce"
+    },
+    "workflows/formalize.md": {
+      "mode": 420,
+      "sha256": "ab4ea69c8e43ec447385cb2753574aa5cc81bd84be9944ddb73d2d21ec6fd7f0"
+    },
+    "workflows/formalizeproblem.md": {
+      "mode": 420,
+      "sha256": "2d62c81cfb5fc0c7355ad8b67adb6212f44c90b865fd90a5cacacf66c216c7b4"
+    },
+    "workflows/init-merlean.md": {
+      "mode": 420,
+      "sha256": "b8087ef5d81a1f2220154a0a41b5e2bdd055b1db056a47633bef5207f499e885"
+    },
+    "workflows/lite-research.md": {
+      "mode": 420,
+      "sha256": "1a8d1b054eefd42038bdcb184cd8a58167bf6a086b3845bb8cacea22a6d5cadd"
+    },
+    "workflows/merlean-heavy.md": {
+      "mode": 420,
+      "sha256": "9fbef5d3db92e13f85bef038dd87308fcad4e2e14fb7719da00c86334ba06c51"
+    },
+    "workflows/merlean-lite.md": {
+      "mode": 420,
+      "sha256": "dfaa572d3c460901eb47e98561e60e60d91cebd9036721bdbe594ffe02fd02c2"
+    },
+    "workflows/paper-audit.md": {
+      "mode": 420,
+      "sha256": "17269af6cffcfecbc3c1d69ac9643e93a01f7978a37eb8e468d519d1d8b51631"
+    },
+    "workflows/paper-claude-protocol.md": {
+      "mode": 420,
+      "sha256": "ff05f76964a2613d180f4c8466434c3d4fa500a5d6c32d07fa6f1d2b06f6cf7a"
+    },
+    "workflows/paper-compose.md": {
+      "mode": 420,
+      "sha256": "fdcbca9ae7d937054e63538cdaecc6dd507accb3832d3db7aad58e30cd622f00"
+    },
+    "workflows/paper-writing.md": {
+      "mode": 420,
+      "sha256": "f48e9951174138e60003c31dfaa7ba83d412e230de0d85377b19806962d49595"
+    },
+    "workflows/paper/audit-checklist.md": {
+      "mode": 420,
+      "sha256": "2ae36dbd3ea4240f6ab9da1d139f544e1e06bd0492ee7fdc90819ba03cf2108c"
+    },
+    "workflows/paper/merlean.md": {
+      "mode": 420,
+      "sha256": "c5cc1138821f47f76f0fc54982db1ac91809225b2397928f301fa820e8f863a4"
+    },
+    "workflows/paper/protocol.md": {
+      "mode": 420,
+      "sha256": "c51b415797d5439e504fde4b4aac7b5c252399d9cfea313002d549f585861c38"
+    },
+    "workflows/paper/references.md": {
+      "mode": 420,
+      "sha256": "7e4ed7baf3f0f725188e4cfe2f87d6cca83bc03fd1d67be658ba592eee649c6a"
+    },
+    "workflows/paper/refinement.md": {
+      "mode": 420,
+      "sha256": "408577ec2de9798b1a1886ad9fe1b2b49cb1d0763b82dc6e2dbd9a8a2c239a71"
+    },
+    "workflows/plan-graph.md": {
+      "mode": 420,
+      "sha256": "1ad4c10c5a62100a89a8c3a8375aa56c008016dba017555d1cf9d7a99adf61f0"
+    },
+    "workflows/prove.md": {
+      "mode": 420,
+      "sha256": "6086f12987fd1fc1a4cfd36b1a9021f9349a3a44dc5259c8a0bfe7c9d648b8a2"
+    }
+  },
+  "package": "merlean-lite-codex",
+  "schema_version": 1
+}

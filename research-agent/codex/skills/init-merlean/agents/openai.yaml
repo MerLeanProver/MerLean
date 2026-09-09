@@ -1,4 +1,0 @@
-interface:
-  display_name: "Initialize MerLEAN"
-  short_description: "Prepare the Codex MerLEAN runtime"
-  default_prompt: "Use $init-merlean to initialize this MerLEAN Codex workspace."

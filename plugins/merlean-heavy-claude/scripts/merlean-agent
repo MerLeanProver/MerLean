@@ -1,0 +1,49 @@
+#!/usr/bin/env python3
+"""Resolve a MerLean agent/grade target without launching a model or changing plan state."""
+import argparse
+import json
+from pathlib import Path
+
+
+def main():
+    root = Path(__file__).resolve().parents[1]
+    installed_providers = [p for p in ("claude", "codex")
+                           if (root / f".{p}-plugin/plugin.json").is_file()]
+    installed_provider = installed_providers[0] if len(installed_providers) == 1 else None
+    parser = argparse.ArgumentParser(description=__doc__)
+    modes = parser.add_mutually_exclusive_group()
+    modes.add_argument("-lite", "--lite", dest="mode", action="store_const", const="lite")
+    modes.add_argument("-heavy", "--heavy", dest="mode", action="store_const", const="heavy")
+    modes.add_argument("--paper-writing", dest="mode", action="store_const", const="paper-writing")
+    parser.add_argument("--provider", choices=("claude", "codex"),
+                        default=installed_provider or "codex")
+    parser.add_argument("--task", choices=("research", "formalize", "prove", "translate-only", "paper"))
+    parser.add_argument("--resume-mode", choices=("lite", "heavy", "paper-writing"),
+                        help="explicit mode from the campaign being resumed; no ambient state lookup")
+    args = parser.parse_args()
+    if args.mode and args.resume_mode and args.mode != args.resume_mode:
+        parser.error("explicit mode conflicts with resumed campaign mode")
+    mode = args.mode or args.resume_mode
+    requested_mode = "paper-writing" if args.task == "paper" else "heavy" if args.task in {"formalize", "prove", "translate-only"} else None
+    if mode and requested_mode and mode != requested_mode:
+        parser.error("selected mode conflicts with requested full-formalization/paper task")
+    mode = mode or requested_mode or "lite"
+    agent = "paper-writing" if mode == "paper-writing" else "merlean-" + mode
+    installed = root / "skills" / agent / "SKILL.md"
+    bundled = root / "plugins" / f"{agent}-{args.provider}" / "skills" / agent / "SKILL.md"
+    entry = installed if installed_provider == args.provider and installed.is_file() else bundled
+    # All bundles retain internal capabilities, but selecting another public agent
+    # does not pretend to install that agent or launch an LLM.
+    print(json.dumps({
+        "agent": agent, "provider": args.provider, "lite": mode == "lite",
+        "grade_target": None if args.task == "translate-only" or mode == "paper-writing" else "SILVER" if mode == "lite" else "GOLD",
+        "workflow": args.task or ("paper" if mode == "paper-writing" else "research"),
+        "entrypoint": str(entry) if entry.is_file() else None,
+        "source_instructions": str(root / "workflows" / f"{agent}.md"),
+        "launches_model": False,
+    }, indent=2))
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

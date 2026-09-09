@@ -1,0 +1,10 @@
+{
+  "grade": "GOLD",
+  "target_signature_hash": "o4-zero",
+  "dossier_signature_hash": "o4-zero",
+  "axioms": ["propext", "Classical.choice", "Quot.sound"],
+  "assumptions": [{"name": "lowVanish4 : Subsingleton H4", "kind": "derived", "status": "closed", "relation_to_goal": "carrier_collapse", "lean_decl": "lowVanish4"}],
+  "interfaces": [{"name": "StrictStage4", "intended_instance": "claimedAdapter", "toy_instances": []}],
+  "definition_independence": true,
+  "independent_gold_audit": true
+}

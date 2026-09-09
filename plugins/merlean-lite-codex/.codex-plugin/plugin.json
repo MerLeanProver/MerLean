@@ -1,0 +1,38 @@
+{
+  "name": "merlean-lite-codex",
+  "version": "2.0.0",
+  "description": "Default NL-first mathematical research to Silver; targeted Lean checks.",
+  "author": {
+    "name": "Jinzheng Li, Zeru Zhu, and Yuanjie Ren",
+    "url": "https://github.com/MerLeanProver"
+  },
+  "homepage": "https://github.com/MerLeanProver/MerLean",
+  "repository": "https://github.com/MerLeanProver/MerLean",
+  "license": "Apache-2.0",
+  "keywords": [
+    "mathematics",
+    "lean4",
+    "formalization",
+    "research"
+  ],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Merlean Lite",
+    "shortDescription": "Default NL-first mathematical research to Silver; targeted Lean checks.",
+    "longDescription": "Default NL-first mathematical research to Silver; targeted Lean checks.",
+    "developerName": "MerLeanProver",
+    "category": "Productivity",
+    "capabilities": [
+      "Research",
+      "Write"
+    ],
+    "websiteURL": "https://github.com/MerLeanProver/MerLean",
+    "privacyPolicyURL": "https://github.com/MerLeanProver/MerLean/blob/main/PRIVACY.md",
+    "termsOfServiceURL": "https://github.com/MerLeanProver/MerLean/blob/main/TERMS.md",
+    "composerIcon": "./assets/merlean-logo.png",
+    "logo": "./assets/merlean-logo.png",
+    "defaultPrompt": [
+      "Use $merlean-lite for this mathematics task."
+    ]
+  }
+}

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Merlean Lite"
+  short_description: "Default NL-first mathematical research to Silver; targeted Lean "
+  default_prompt: "Use $merlean-lite for this mathematics task."

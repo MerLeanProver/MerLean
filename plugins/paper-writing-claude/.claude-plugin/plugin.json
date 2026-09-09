@@ -1,0 +1,18 @@
+{
+  "name": "paper-writing-claude",
+  "version": "2.0.0",
+  "description": "Compose, refine, resume, and audit mathematics papers without losing results.",
+  "author": {
+    "name": "Jinzheng Li, Zeru Zhu, and Yuanjie Ren",
+    "url": "https://github.com/MerLeanProver"
+  },
+  "homepage": "https://github.com/MerLeanProver/MerLean",
+  "repository": "https://github.com/MerLeanProver/MerLean",
+  "license": "Apache-2.0",
+  "keywords": [
+    "mathematics",
+    "lean4",
+    "formalization",
+    "research"
+  ]
+}

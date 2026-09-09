@@ -13,6 +13,8 @@ plan-graph nodes rather than Mathlib declarations, and a variant for informal re
 notes was added. See the NOTICE file at the repository root.
 """
 
+from __future__ import annotations
+
 import json
 import os
 

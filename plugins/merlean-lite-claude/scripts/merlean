@@ -1,0 +1,36 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PLUGIN_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
+RUNTIME_ROOT="${MERLEAN_RUNTIME:-$PLUGIN_ROOT}"
+
+# The deterministic offline backend is stdlib-only. Let audits and CI run it before
+# init-merlean creates a plugin-local venv; online mode still fails closed without one.
+if [ "${PLAN_OFFLINE:-0}" = "1" ]; then
+  exec "${PYTHON:-python3}" "$PLUGIN_ROOT/src/offline_cli.py" "$@"
+fi
+
+# Help is credential/dependency-free even when a local venv is only partly installed.
+# This never changes the selected backend for stateful commands.
+if [ "${1:-}" = "--help" ] && [ "$#" = 1 ]; then
+  cat <<'EOF'
+usage: merlean [--help] <command> ...
+
+MerLean plan-graph CLI. Run scripts/setup.sh before online commands, or
+set PLAN_OFFLINE=1 explicitly for the deterministic offline backend.
+Research mode selection is separate: scripts/merlean-agent [-lite|-heavy].
+EOF
+  exit 0
+fi
+
+if [ -x "$RUNTIME_ROOT/.venv/bin/python" ]; then
+  PYTHON="$RUNTIME_ROOT/.venv/bin/python"
+elif [ -x "$RUNTIME_ROOT/.venv/Scripts/python.exe" ]; then
+  PYTHON="$RUNTIME_ROOT/.venv/Scripts/python.exe"
+else
+  echo "MerLean runtime missing; run scripts/setup.sh first (or explicitly select PLAN_OFFLINE=1)." >&2
+  exit 1
+fi
+
+exec "$PYTHON" "$PLUGIN_ROOT/src/cli.py" "$@"

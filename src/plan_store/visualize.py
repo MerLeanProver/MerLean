@@ -15,6 +15,11 @@ from pathlib import Path
 from ._vendor.lean_parser import DependencyAnalyzer
 from .lean_sync import lean_file_for
 
+
+def _is_meta(node: dict) -> bool:
+    """Recognize non-proof nodes without importing an online store backend."""
+    return node.get("type") in {"Summary", "Note"} or node.get("kind") == "summary"
+
 _STATUS_COLOR = {
     "completed": "#c8f0c8", "completed_axiom": "#c8e0ff", "pending": "#eeeeee",
     "in_progress": "#fff1b0", "failed": "#ffc8c8",
@@ -93,7 +98,6 @@ def build_dot(graph, lib_dir=None, title="") -> str:
             L.append(f'  "{sid}" [label="{lbl}", shape={shp}, fillcolor="{color}"];')
 
     # statement-level dependency edges (A depends on B  =>  A -> B)
-    from .store import _is_meta
     for n in nodes:
         src = _rep(n)
         for dep in n.get("dependencies") or []:

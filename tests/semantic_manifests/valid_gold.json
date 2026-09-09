@@ -1,0 +1,14 @@
+{
+  "grade": "GOLD",
+  "target_signature_hash": "eg3-target-v1",
+  "dossier_signature_hash": "eg3-target-v1",
+  "axioms": ["propext", "Classical.choice", "Quot.sound"],
+  "assumptions": [
+    {"name": "baseFinite", "kind": "original", "status": "closed", "relation_to_goal": "none"},
+    {"name": "primaryVanishes", "kind": "derived", "status": "closed", "relation_to_goal": "none", "lean_decl": "EG3.primaryVanishes"}
+  ],
+  "interfaces": [{"name": "Stage8Data", "intended_instance": "EG3.stage8Data", "toy_instances": []}],
+  "theorem_faces": [{"name": "sevenSkeleton", "covered": true}],
+  "definition_independence": true,
+  "independent_gold_audit": true
+}

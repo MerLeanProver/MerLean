@@ -187,6 +187,7 @@ class DependencyAnalyzer:
         self.registry: dict[str, dict] = {}
         self.file_to_declarations: dict[str, list] = {}
         self.file_to_label: dict[str, str] = {}
+        self.file_to_declaration_records: dict[str, list[dict]] = {}
 
     def build_registry(self, library_path: Path) -> None:
         """Build a registry of all declarations in the library."""
@@ -194,6 +195,7 @@ class DependencyAnalyzer:
         self.registry = {}
         self.file_to_declarations = {}
         self.file_to_label = {}
+        self.file_to_declaration_records = {}
 
         for lean_path in sorted(library_path.rglob("*.lean")):
             if ".lake" in str(lean_path):
@@ -205,11 +207,13 @@ class DependencyAnalyzer:
                 file_label = self._filename_to_label(filename)
                 self.file_to_label[filename] = file_label
 
-                declarations = self._extract_declarations(content)
-                self.file_to_declarations[filename] = [(d[0], d[1]) for d in declarations]
+                records = self._extract_declaration_records(content)
+                self.file_to_declaration_records[filename] = records
+                self.file_to_declarations[filename] = [(r["name"], r["type"]) for r in records]
 
-                for decl_name, decl_type, namespace in declarations:
-                    full_key = f"{namespace}.{decl_name}" if namespace else decl_name
+                for record in records:
+                    decl_name, decl_type, namespace = record["name"], record["type"], record["namespace"]
+                    full_key = record["full_name"]
                     self.registry[full_key] = {
                         'file': filename,
                         'path': lean_path,
@@ -219,56 +223,124 @@ class DependencyAnalyzer:
                         'decl_label': self._make_decl_label(decl_name, decl_type, namespace),
                         'short_name': decl_name,
                     }
+            except ValueError as e:
+                # Never turn an unresolved scope into an empty, apparently clean census.
+                raise ValueError(f"Could not identify declarations in {lean_path}: {e}") from e
             except Exception as e:
                 print(f"Warning: Could not analyze {lean_path}: {e}")
 
+    @staticmethod
+    def _mask_noncode(content: str) -> str:
+        """Mask comments/strings while preserving offsets and physical line numbers."""
+        chars = list(content)
+        i, depth, in_string = 0, 0, False
+        while i < len(content):
+            if depth:
+                if content.startswith("/-", i):
+                    chars[i:i + 2] = "  "
+                    depth += 1
+                    i += 2
+                elif content.startswith("-/", i):
+                    chars[i:i + 2] = "  "
+                    depth -= 1
+                    i += 2
+                else:
+                    if content[i] != "\n":
+                        chars[i] = " "
+                    i += 1
+            elif in_string:
+                if content[i] == "\\" and i + 1 < len(content):
+                    chars[i] = " "
+                    if content[i + 1] != "\n":
+                        chars[i + 1] = " "
+                    i += 2
+                else:
+                    if content[i] == '"':
+                        in_string = False
+                    if content[i] != "\n":
+                        chars[i] = " "
+                    i += 1
+            elif content.startswith("/-", i):
+                chars[i:i + 2] = "  "
+                depth = 1
+                i += 2
+            elif content.startswith("--", i):
+                while i < len(content) and content[i] != "\n":
+                    chars[i] = " "
+                    i += 1
+            elif content[i] == '"':
+                chars[i] = " "
+                in_string = True
+                i += 1
+            elif content[i] == "«":
+                # A quoted identifier is code, even if it contains comment markers.
+                close = content.find("»", i + 1)
+                i = close + 1 if close >= 0 else len(content)
+            else:
+                i += 1
+        return "".join(chars)
+
+    def _extract_declaration_records(self, content: str) -> list[dict]:
+        """Extract occurrence identities; this is a lexical census, not elaboration.
+
+        Keep scope and location on each occurrence, rather than recovering identity
+        from the project registry (where a true duplicate may overwrite a key).
+        """
+        ident = r"(?:«[^»\n]+»|[^\W\d][\w']*)"
+        name = rf"{ident}(?:\.{ident})*"
+        scope_re = re.compile(rf"^\s*(?:noncomputable\s+)?(namespace|section)\b(?:\s+({name}))?")
+        end_re = re.compile(rf"^\s*end\b(?:\s+({name}))?\s*$")
+        decl_re = re.compile(
+            rf"^\s*(?P<modifiers>(?:(?:noncomputable|private|protected|partial)\s+)*)"
+            rf"(?P<kind>def|theorem|lemma|structure|inductive|class|instance|axiom|abbrev|proposition|corollary)"
+            rf"\s+(?P<name>{name})(?![\w'])"
+        )
+        # Section frames participate in end matching but not declaration names.
+        frames: list[tuple[str, Optional[str]]] = []
+        records = []
+        offset = 0
+        for line_number, line in enumerate(self._mask_noncode(content).splitlines(keepends=True), 1):
+            scope = scope_re.match(line)
+            ending = end_re.match(line)
+            if scope:
+                kind, scope_name = scope.groups()
+                if kind == "namespace" and scope_name is None:
+                    raise ValueError(f"Missing namespace name at line {line_number}")
+                frames.append((kind, scope_name))
+            elif ending:
+                if frames:
+                    end_name = ending.group(1)
+                    if end_name is not None and end_name != frames[-1][1]:
+                        raise ValueError(f"Mismatched scope end at line {line_number}: {end_name}")
+                    frames.pop()
+                elif ending.group(1) is not None:
+                    raise ValueError(f"Unmatched scope end at line {line_number}")
+            else:
+                match = decl_re.match(line)
+                if match:
+                    source_name = match.group("name")
+                    if source_name not in ["_", "this", "that", "h", "H", "hs", "ih"]:
+                        namespace = ".".join(n for k, n in frames if k == "namespace" and n)
+                        if source_name.startswith("_root_."):
+                            full_name = source_name[len("_root_."):]
+                        else:
+                            full_name = f"{namespace}.{source_name}" if namespace else source_name
+                        records.append({
+                            "name": source_name,
+                            "type": match.group("kind"),
+                            "namespace": namespace or None,
+                            "full_name": full_name,
+                            "line": line_number,
+                            "position": offset + match.start("kind"),
+                            "is_private": "private" in match.group("modifiers").split(),
+                        })
+            offset += len(line)
+        return records
+
     def _extract_declarations(self, content: str) -> list:
-        """Extract all declaration names, types, and enclosing namespaces."""
-        declarations = []
-        content_clean = self._remove_comments(content, for_dependency_search=True)
-
-        namespace_at_pos = {}
-        namespace_stack = []
-        lines = content_clean.split('\n')
-        char_pos = 0
-
-        for line in lines:
-            ns_match = re.match(r'\s*namespace\s+(\w+)', line)
-            if ns_match:
-                namespace_stack.append(ns_match.group(1))
-
-            end_match = re.match(r'\s*end\s+(\w+)', line)
-            if end_match and namespace_stack:
-                end_name = end_match.group(1)
-                if namespace_stack and namespace_stack[-1] == end_name:
-                    namespace_stack.pop()
-
-            current_ns = ".".join(namespace_stack) if namespace_stack else None
-            for i in range(len(line) + 1):
-                namespace_at_pos[char_pos + i] = current_ns
-            char_pos += len(line) + 1
-
-        keywords = [
-            'def', 'theorem', 'lemma', 'structure', 'inductive', 'class',
-            'instance', 'axiom', 'abbrev', 'proposition', 'corollary'
-        ]
-
-        for keyword in keywords:
-            pattern = rf'''
-                ^\s*                                        # Start of line
-                (?:(?:noncomputable|private|protected|partial)\s+)*  # Optional modifiers
-                {keyword}\s+                                # Keyword
-                ([A-Za-z_][A-Za-z0-9_']*)                   # Declaration name
-                \b
-            '''
-            for match in re.finditer(pattern, content_clean, re.VERBOSE | re.MULTILINE):
-                decl_name = match.group(1)
-                if decl_name not in ['_', 'this', 'that', 'h', 'H', 'hs', 'ih']:
-                    pos = match.start()
-                    namespace = namespace_at_pos.get(pos, None)
-                    declarations.append((decl_name, keyword, namespace))
-
-        return declarations
+        """Compatibility projection for declaration-level dependency consumers."""
+        return [(r["name"], r["type"], r["namespace"])
+                for r in self._extract_declaration_records(content)]
 
     def _remove_comments(self, content: str, for_dependency_search: bool = False) -> str:
         """Remove comments from Lean content."""
@@ -391,19 +463,11 @@ class DependencyAnalyzer:
                 namespace_to_struct[short_name] = info['decl_label']
 
         def find_enclosing_namespace(content: str, decl_name: str) -> Optional[str]:
-            decl_match = re.search(rf'\b(def|theorem|lemma|structure)\s+{re.escape(decl_name)}\b', content)
-            if not decl_match:
-                return None
-            decl_pos = decl_match.start()
-            namespace_stack = []
-            for m in re.finditer(r'\b(namespace|end)\s+(\w+)', content[:decl_pos]):
-                keyword = m.group(1)
-                name = m.group(2)
-                if keyword == 'namespace':
-                    namespace_stack.append(name)
-                elif keyword == 'end' and namespace_stack and namespace_stack[-1] == name:
-                    namespace_stack.pop()
-            return namespace_stack[-1] if namespace_stack else None
+            matches = [r for r in self._extract_declaration_records(content)
+                       if r["name"] == decl_name]
+            # This legacy short-name API cannot disambiguate repeated occurrences.
+            # Do not invent a scope by selecting the first one.
+            return matches[0]["namespace"] if len(matches) == 1 else None
 
         for decl_name, decl_type in declarations:
             body = self._extract_declaration_body(content_clean, decl_name, decl_type)
@@ -430,6 +494,12 @@ class DependencyAnalyzer:
                 if short_name == decl_name:
                     continue
                 if short_name.lower() in LEAN_KEYWORDS or short_name in LEAN_KEYWORDS:
+                    continue
+                # Most registry names do not occur in this declaration body.  Avoid
+                # compiling a regular expression for every absent name: on libraries
+                # with thousands of declarations the old loop made visualization
+                # effectively quadratic and could take minutes per plan node.
+                if short_name not in body:
                     continue
                 pattern = rf'(?<![.\w]){re.escape(short_name)}\b'
                 if re.search(pattern, body):

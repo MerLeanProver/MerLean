@@ -1,0 +1,16 @@
+{
+  "grade": "GOLD",
+  "target_signature_hash": "stage8-rigidity",
+  "dossier_signature_hash": "stage8-rigidity",
+  "axioms": ["propext", "Classical.choice", "Quot.sound"],
+  "assumptions": [
+    {"name": "alpha", "kind": "residual", "status": "open", "relation_to_goal": "none"},
+    {"name": "beta", "kind": "residual", "status": "open", "relation_to_goal": "none"},
+    {"name": "uniquenessLow", "kind": "residual", "status": "open", "relation_to_goal": "none"},
+    {"name": "gamma", "kind": "residual", "status": "open", "relation_to_goal": "none"},
+    {"name": "hkappa", "kind": "residual", "status": "open", "relation_to_goal": "none"}
+  ],
+  "interfaces": [{"name": "RationalRigidityResidual", "intended_instance": null, "toy_instances": []}],
+  "definition_independence": true,
+  "independent_gold_audit": true
+}

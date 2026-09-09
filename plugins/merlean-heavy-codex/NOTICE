@@ -1,0 +1,23 @@
+MerLean
+Copyright 2026 Jinzheng Li, Zeru Zhu and Yuanjie Ren
+
+This product includes software developed as part of the following projects.
+
+-------------------------------------------------------------------------------
+LeanSearch v2 (https://github.com/frenzymath/LeanSearch-v2)
+Licensed under the Apache License, Version 2.0.
+
+The two-stage retrieval design used by the plan graph — an embedding stage that
+recalls candidates, followed by a reranking stage that scores each (query,
+candidate) pair — follows the shape introduced by LeanSearch v2. The reranker
+instruction in `src/plan_store/rerank.py` is adapted from theirs.
+
+Changes: the cross-encoder reranker (Qwen3-Reranker) is replaced with an OpenAI
+LLM scoring candidates 0-10; the instruction is rewritten for plan-graph nodes
+(informal content plus a formal anchor) rather than Mathlib declarations; and a
+second instruction variant for informal research notes was added.
+
+Paper: Gao, Sun, Jiang, Wang, Xu, Wu, Dai, Dong.
+"LeanSearch v2: Global Premise Retrieval for Lean 4 Theorem Proving."
+arXiv:2605.13137
+-------------------------------------------------------------------------------

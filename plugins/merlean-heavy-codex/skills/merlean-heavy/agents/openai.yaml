@@ -1,0 +1,4 @@
+interface:
+  display_name: "Merlean Heavy"
+  short_description: "Full proving and supplied-proof formalization to strictly audite"
+  default_prompt: "Use $merlean-heavy for this mathematics task."

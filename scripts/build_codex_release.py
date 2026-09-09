@@ -1,87 +1,80 @@
 #!/usr/bin/env python3
-"""Build deterministic skills-only portal archives from one Git tree, never the worktree."""
-
+"""Compatibility release command: build all six agents from a committed Git tree, not worktree."""
 from __future__ import annotations
 
 import argparse
-import json
-import subprocess
-import zipfile
 from pathlib import Path
+import subprocess
+import sys
+import tempfile
 
+try:
+    from audit_codex_release import audit_archive
+except ModuleNotFoundError:
+    from scripts.audit_codex_release import audit_archive
 
 ROOT = Path(__file__).resolve().parents[1]
-PACKAGES = {
-    "lite-codex": Path("research-agent/codex"),
-    "paper-writing-codex": Path("paper-writing-agent/codex"),
-}
-POLICY_FILES = ["PRIVACY.md", "TERMS.md", "SUPPORT.md", "SECURITY.md"]
+SOURCE_DIRS = {"src", "workflows", "roles", "ports", "templates", "assets", "scripts", "docs"}
+SOURCE_FILES = {"LICENSE", "NOTICE", "PRIVACY.md", "SECURITY.md", "SUPPORT.md", "TERMS.md"}
+FORBIDDEN = {".git", ".venv", ".lake", "__pycache__", ".pytest_cache", "tests"}
 
 
-def git(*args: str, text: bool = False) -> bytes | str:
-    return subprocess.check_output(["git", *args], cwd=ROOT, text=text)
+def git(*args: str) -> bytes:
+    return subprocess.check_output(["git", *args], cwd=ROOT)
 
 
-def tree_files(treeish: str) -> list[str]:
-    return [line for line in git("ls-tree", "-r", "--name-only", treeish, text=True).splitlines() if line]
-
-
-def blob(treeish: str, path: str) -> bytes:
-    return git("show", f"{treeish}:{path}")
-
-
-def write_zip(treeish: str, name: str, source: Path, output: Path) -> None:
-    prefix = source.as_posix().rstrip("/") + "/"
-    selected = [path for path in tree_files(treeish) if path.startswith(prefix)]
-    if not selected:
-        raise SystemExit(f"no tracked plugin files under {source} at {treeish}")
-
-    entries: dict[str, bytes] = {}
-    for path in selected:
-        relative = path[len(prefix):]
-        if relative in {".env", ".mcp.json"}:
+def materialize(treeish: str, destination: Path) -> None:
+    # Works in a standalone checkout and in a nested monorepo.
+    prefix = git("rev-parse", "--show-prefix").decode().strip().rstrip("/")
+    tree = git("rev-parse", "--verify", f"{treeish}:{prefix}" if prefix else f"{treeish}^{{tree}}").decode().strip()
+    records = git("ls-tree", "--full-tree", "-rz", tree).split(b"\0")
+    for record in records:
+        if not record:
             continue
-        if any(part in {".venv", ".lake", "__pycache__", ".pytest_cache"}
-               for part in Path(relative).parts):
+        metadata, raw_path = record.split(b"\t", 1)
+        mode, kind, oid = metadata.decode().split()
+        relative = Path(raw_path.decode())
+        if relative.parts[0] not in SOURCE_DIRS and relative.as_posix() not in SOURCE_FILES:
             continue
-        entries[relative] = blob(treeish, path)
-
-    manifest_path = ".codex-plugin/plugin.json"
-    manifest = json.loads(entries[manifest_path])
-    manifest.pop("mcpServers", None)
-    entries[manifest_path] = (json.dumps(manifest, indent=2, ensure_ascii=False) + "\n").encode()
-
-    available = set(tree_files(treeish))
-    for policy in POLICY_FILES:
-        if policy in available:
-            entries[policy] = blob(treeish, policy)
-    for logo in ["assets/merlean-logo.svg", "assets/merlean-logo.png"]:
-        if logo in available:
-            entries[logo] = blob(treeish, logo)
-
-    output.parent.mkdir(parents=True, exist_ok=True)
-    with zipfile.ZipFile(output, "w", compression=zipfile.ZIP_DEFLATED, compresslevel=9) as archive:
-        for relative, data in sorted(entries.items()):
-            info = zipfile.ZipInfo(relative, date_time=(2026, 1, 1, 0, 0, 0))
-            info.compress_type = zipfile.ZIP_DEFLATED
-            info.external_attr = (0o755 if relative.startswith("scripts/") else 0o644) << 16
-            archive.writestr(info, data)
-
-    print(f"built {name}: {output} ({output.stat().st_size} bytes, {len(entries)} files)")
+        if FORBIDDEN.intersection(relative.parts) or relative.suffix in {".pyc", ".olean", ".ilean"}:
+            continue
+        if any(part.startswith(".env") for part in relative.parts) and relative.as_posix() != "templates/.env.example":
+            raise ValueError(f"credential source refused: {relative}")
+        if mode not in {"100644", "100755"} or kind != "blob":
+            raise ValueError(f"release source must be a regular Git blob: {relative}")
+        path = destination / relative
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_bytes(git("cat-file", "blob", oid))
+        path.chmod(0o755 if mode == "100755" else 0o644)
+    if not (destination / "scripts/build_bundles.py").is_file():
+        raise ValueError("selected Git tree predates the six-agent source layout; use the new local worktree builder until committed")
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser()
+    parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--treeish", default="HEAD")
     parser.add_argument("--out", type=Path, default=ROOT / "dist")
     args = parser.parse_args()
-
-    git("rev-parse", "--verify", f"{args.treeish}^{{tree}}")
-    for name, source in PACKAGES.items():
-        manifest = json.loads(blob(args.treeish, f"{source}/.codex-plugin/plugin.json"))
-        version = manifest["version"].split("+", 1)[0]
-        output = args.out / f"{name}-{version}-skills-only.zip"
-        write_zip(args.treeish, name, source, output)
+    output = args.out.resolve()
+    with tempfile.TemporaryDirectory(prefix="merlean-git-release-") as temp:
+        snapshot = Path(temp) / "source"
+        snapshot.mkdir()
+        materialize(args.treeish, snapshot)
+        subprocess.run([sys.executable, str(snapshot / "scripts/build_bundles.py"),
+                        "--out", str(Path(temp) / "plugins"), "--archives", str(output)],
+                       cwd=snapshot, check=True)
+    expected = [f"{agent}-{provider}" for provider in ("claude", "codex")
+                for agent in ("merlean-lite", "merlean-heavy", "paper-writing")]
+    errors = []
+    for name in expected:
+        path = output / f"{name}.zip"
+        if not path.is_file():
+            errors.append(f"missing archive: {name}")
+        else:
+            errors.extend(f"{name}: {error}" for error in audit_archive(path, name))
+    if errors:
+        raise SystemExit("\n".join(errors))
+    print(f"PASS: six audited archives from Git tree {args.treeish}")
     return 0
 
 

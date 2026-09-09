@@ -8,7 +8,7 @@ from the predecessor plan store are vendored copies under `_vendor/`).
 ## Run
 
 Use the shared `.venv` (Mem0 2.x + spaCy, installed from `src/requirements.txt`
-via the `init_merlean` skill — `bash .claude/skills/init_merlean/setup.sh`):
+via `bash scripts/setup.sh --project <LIB_DIR>`):
 
 ```bash
 # .venv/bin/python on Linux/macOS, .venv/Scripts/python.exe on Windows

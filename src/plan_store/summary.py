@@ -6,6 +6,8 @@ summarising a human↔agent conversation, we summarise the statement plan — wh
 establishes and how its lemmas compose — with one OpenAI call.
 """
 
+from __future__ import annotations
+
 import os
 from pathlib import Path
 

@@ -1,307 +1,242 @@
 # MerLean
 
-**Autonomous mathematics agents over a plan graph** — from an informal question to a
-machine-checked Lean 4 + Mathlib result, and from a finished campaign to a publishable paper.
+Three mathematics agents, available in **Claude Code and Codex**: six entrypoints in total.
 
-Give the research agent a paper, a stubbed `sorry`, or an informal open question. It decomposes
-the goal into a dependency graph of lemmas, proves each node in its own file with a dedicated
-`compile-fix` subagent, and drives the whole plan to a **sorry-free, axiom-clean** proof — one
-whose `#print axioms` output is exactly `[propext, Classical.choice, Quot.sound]`, with no
-`sorry` in the dependency cone. When speed matters more than certification, its **lite mode**
-works NL-first — adversarial skeptic debate plus Python experiments — and fires Lean only at
-the weakest links. When the mathematics is done, the paper-writing agent turns the campaign
-into a paper through a gated 8-step protocol.
+| Agent | When to use it | Verification target |
+| --- | --- | --- |
+| **MerLean -lite** | Explore a question, develop a natural-language proof, debate it, and Lean-check its weakest links | **SILVER** |
+| **MerLean -heavy** | Fully prove a result, formalize an existing proof or paper, or complete Lean proofs | **GOLD** |
+| **Paper-writing** | Compose, refine, resume, or audit a mathematics paper | Preserve the recorded research grade |
 
-## Two agents × N runtimes
+**Lite is on by default.** Bare MerLean selects Lite; `-heavy` is the explicit name for
+the former “Lite off” state. The flags are mutually exclusive. Silver and Gold are evidence
+thresholds, not labels awarded automatically: unfinished Lite work may remain Bronze, and
+Heavy cannot report Gold until its full audit passes. Lite does not silently escalate to Heavy.
 
-|  | **Claude Code** | **Codex** | *(future: opencode, …)* |
-|---|---|---|---|
-| **Research agent** — formalize / prove / auto-research / lite-research | [`.claude/`](.claude) (live at the repo root — the repo *is* the Claude Code install) *or* installable as a plugin ([`.claude-plugin/`](.claude-plugin) + [`skills/`](skills) + [`agents/`](agents)) | [`research-agent/codex/`](research-agent/codex) | one folder per runtime |
-| **Paper-writing agent** — campaign → gated 8-step paper | [`paper-writing-agent/claude/`](paper-writing-agent/claude) (invoked via `/write-paper`) | [`paper-writing-agent/codex/`](paper-writing-agent/codex) | one folder per runtime |
+## Choose a workflow
 
-Each version of an agent implements the same modes, roles, and artifacts; only the
-orchestration is adapted to the runtime (Claude Code runs parallel background subagents;
-Codex runs the same roles as child skills). Overviews:
-[`research-agent/README.md`](research-agent/README.md) ·
-[`paper-writing-agent/README.md`](paper-writing-agent/README.md).
+- “MerLean: investigate this question” → Lite.
+- “MerLean -lite: check this proposed proof” → Lite, even though a proof is attached.
+- “MerLean -heavy: finish this result to Gold” → Heavy.
+- “Formalize this natural-language proof/paper in Lean” → Heavy, using the supplied proof.
+- “Fill the sorries in this Lean file” → Heavy, preserving its statements.
+- “Translate only this statement; do not prove it” → Heavy's scoped translation procedure,
+  with an **unproved** output and no research grade.
+- “Write/refine/audit this paper” → Paper-writing. Audit-only remains read-only.
 
-The repo is **install-ready as checked out** for the Claude Code versions: `.claude/` (all
-skills, subagents, settings) is tracked in git, and `src/` holds the plan-graph package. One
-skill — `/init_merlean` — prepares the runtime. The same repo also serves as both a **Claude Code
-plugin marketplace** and a **Codex plugin marketplace** (see Quick start) for installing MerLean
-into any project without cloning.
+There is no separate public formalization agent. Heavy contains the paper-formalization,
+Lean-proof completion, statement-translation, and open-question procedures. An existing proof
+can eliminate proof-discovery work; it does **not** eliminate the work of faithfully encoding
+objects, filling missing lemmas, auditing citations, and checking the entire Lean dependency cone.
 
----
+## Install from the plugin marketplaces
 
-## Quick start
+Both provider catalogs are published in this repository: Codex reads
+`.agents/plugins/marketplace.json`, and Claude Code reads
+`.claude-plugin/marketplace.json`. Each catalog exposes three standalone packages.
+The marketplace name remains `merlean`.
 
-**1. Clone the repo and enter it.**
+For Claude Code, add this repository as a marketplace:
 
-```bash
-git clone https://github.com/MerLeanProver/MerLean.git
-cd MerLean
-```
-
-**2. Start Claude Code.**
-
-```bash
-claude
-```
-
-**3. Run the setup skill.**
-
-```
-/init_merlean
-```
-
-That one skill does everything: builds the shared `.venv` from `src/requirements.txt`, generates
-`.mcp.json`, creates the root Lean workspace files if missing, and runs `lake update` +
-`lake exe cache get` + `lake build`. Re-running it is safe — it is idempotent.
-
-**Install as a Claude Code plugin (alternative to the clone).** The repo doubles as its own
-plugin marketplace, so MerLean can instead be installed into *any* project:
-
-```
+~~~text
 /plugin marketplace add MerLeanProver/MerLean
-/plugin install merlean@merlean
-```
+/plugin install merlean-lite-claude@merlean
+/plugin install merlean-heavy-claude@merlean
+/plugin install paper-writing-claude@merlean
+~~~
 
-Then start Claude Code **in your math project directory** and run `/merlean:init_merlean`
-there — it prepares the runtime (`.venv`, `.env`, `.mcp.json`, Lean workspace) in that
-directory, while the skills, subagents, and plan-graph code stay inside the plugin. Skills are
-namespaced (`/merlean:auto-research`, `/merlean:prove`, …); the bare names also resolve when
-unambiguous. Steps 4–5 below are the same in both modes.
+For Codex, add this GitHub repository as a plugin marketplace through the host's
+marketplace interface, then select `merlean-lite-codex`, `merlean-heavy-codex`, or
+`paper-writing-codex`. Installation and model access are handled by the host.
 
-**Install the Codex plugins (alternative to the clone).** Add this repository as a Codex
-marketplace, then install the research agent and, optionally, the paper-writing agent:
+Version 2.0.0 replaces the former `merlean` Claude package and `lite-codex` Codex
+package with explicit Lite/Heavy packages. See the [migration guide](docs/plugin-migration.md)
+before switching an existing installation. `paper-writing-codex` retains its identity.
 
-```bash
-codex plugin marketplace add MerLeanProver/MerLean
-codex plugin add lite-codex@merlean
-codex plugin add paper-writing-codex@merlean
-```
+## Local use
 
-The first package provides the formalization, proving, auto-research, lite-research, and plan-graph
-skills. The second provides the gated paper-writing and read-only paper-audit skills. Their Codex
-manifests retain the MerLean authorship and Apache-2.0 license metadata from `LICENSE` and `NOTICE`.
-Both packages are required for the complete MerLean feature set. Release contents are built only
-from Git-tracked files and checked by `scripts/audit_codex_release.py`; local `.env`, `.venv`,
-`.lake`, plan data, caches, and credentials are never part of the marketplace distribution. See
-the [privacy policy](PRIVACY.md), [terms](TERMS.md), and [support policy](SUPPORT.md).
+Generate the six standalone packages:
 
-**4. Choose the plan-graph backend.**
+~~~bash
+python3 scripts/build_bundles.py
+~~~
 
-> [!IMPORTANT]
-> **Never paste an API key into a chat or command argument.** For the online semantic plan graph,
-> configure `OPENAI_API_KEY` in your shell environment or in a local `.env` file that is ignored by
-> Git. MerLean preserves that local configuration but does not distribute or upload it. Get a key
-> at [platform.openai.com/api-keys](https://platform.openai.com/api-keys).
->
-> **What it is for.** The plan graph. Every statement and research note is embedded
-> (`text-embedding-3-large`) so the system can search its own plan by meaning — this is how it
-> avoids re-proving lemmas it already has and how it recalls prior findings. A small model
-> (`gpt-4o-mini`) handles the rest of the graph's bookkeeping: reranking search results,
-> extracting memory facts, and writing plan summaries.
->
-> **Credential-free alternative.** Prefix plan commands with `PLAN_OFFLINE=1` to use the complete
-> deterministic local backend. Offline mode makes no embedding, reranking, vector-store, or
-> summary API calls.
->
-> **What it costs — about $5 per month** of steady use. That is separate from, and far smaller
-> than, your Claude Code subscription. Nearly all of it is the `gpt-4o-mini` calls; embedding a
-> whole plan costs fractions of a cent.
->
-> Every model is overridable: `PLAN_EMBED_MODEL`, `PLAN_LLM_MODEL`, `PLAN_RERANK_MODEL`,
-> `PLAN_SUMMARY_MODEL`.
+The generated packages are:
 
-**5. Point it at an open question.**
+| Claude Code | Codex |
+| --- | --- |
+| `plugins/merlean-lite-claude/` | `plugins/merlean-lite-codex/` |
+| `plugins/merlean-heavy-claude/` | `plugins/merlean-heavy-codex/` |
+| `plugins/paper-writing-claude/` | `plugins/paper-writing-codex/` |
 
-```
-/goal /auto-research <your open question> until it is fully resolved and formalized
-```
+Each has exactly one public `skills/<agent>/SKILL.md`, its provider manifest, and all its
+runtime/supporting files. They do not depend on symlinks or files outside the installed package.
+Use a generated package with the host's local-plugin loading mechanism, or explicitly direct
+an agent to read its entrypoint. **Building is not installation** and does not alter your
+Codex/Claude configuration. The six directories are generated and included in public release commits; edit the
+maintained source, never their copies. Rebuilding refuses locally modified or unknown files.
 
-MerLean will keep attacking the problem until it is resolved on its own, but we do recommend users to stop and discuss it with the agent. 
-Also, we recommend user to use MerLean with other skills on math researches. 
+Catalog-based discovery is also retained: `python3 scripts/build_bundles.py --catalogs`
+optionally generates local Claude/Codex marketplace catalogs, each with three entries.
+This only creates repository-local artifacts; it does not register a marketplace, install
+plugins, modify personal catalogs, or publish anything. Existing differing catalogs are preserved.
 
----
+For a deterministic selection without calling any model:
 
-## The three modes
+~~~bash
+scripts/merlean-agent
+scripts/merlean-agent -lite --provider claude
+scripts/merlean-agent -heavy --provider codex
+scripts/merlean-agent --task formalize
+scripts/merlean-agent --task translate-only
+scripts/merlean-agent --paper-writing
+~~~
 
-| Skill | Input | What it does |
-|---|---|---|
-| **`/formalize`** | a paper (`.tex` / `.pdf`) | Extracts a dependency-ordered statement plan, then formalizes every node to verified Lean, with faithfulness and paper cross-checks. |
-| **`/prove`** | a Lean file with `sorry` / `admit` | Decomposes each goal into helper lemmas and proves them node by node. Relentless: never stops early, never admits an axiom. |
-| **`/auto-research`** | an informal open question | Formalizes the question into a Lean statement, then resolves it — **proving or disproving**, pivoting only on independently verified counter-evidence. Fully autonomous: ambiguous formalizations are decided by canonical reading and loudly documented. Races a portfolio of 2–3 genuinely different routes in parallel (including a disproof route when the direction is uncertain), killing and replacing dead ones. |
-| **`/lite-research`** | an informal open question | **MerLean-lite** — the inverse verification budget: natural-language proof first, at speed. Races parallel *representation-hunting* routes, develops the best into a step ledger under adversarial skeptic debate and small Python experiments, then fires Lean **only at the triaged weakest links** (one contested step proved from its accepted priors as hypotheses). Graded **BRONZE** (debate+numerics) / **SILVER** (+ Lean-certified weak links) / **GOLD** (handed off to `/auto-research` for the full axiom-clean build). |
+This selector reports the entrypoint and target grade; it does not launch an LLM, install a
+plugin, write campaign state, or award a grade. An explicit `--resume-mode heavy` preserves
+the selected campaign mode. Omitted flags never inspect unrelated old campaign state.
 
-**Helper skills** — `/formalizeproblem` (informal problem → faithful Lean statement with `sorry`;
-translation only, no proving), `/plan-graph` (inspect, edit, and semantically search the plan),
-`/init_merlean` (set up the runtime), `/write-paper` (drive a finished campaign through the
-paper-writing agent's 8-step protocol — see
-[`paper-writing-agent/`](paper-writing-agent)).
+### Runtime setup and tools
 
-**Worked examples** — [`examples/`](examples) holds complete campaign records, including a
-deliberately small end-to-end demo (`lite-research` on an undergraduate linear-algebra fact,
-run to a GOLD full formalization, plus the paper-writing run over it).
+~~~bash
+bash scripts/setup.sh --project /absolute/path/to/your/Lean-project
+PLAN_OFFLINE=1 scripts/merlean --data /absolute/path/to/plan-data status
+scripts/paperctl --help
+~~~
 
----
+Setup preserves existing project files and supports `--skip-venv` / `--skip-mathlib`.
+For a read-only plugin installation, pass `--runtime /writable/runtime` and set the same
+`MERLEAN_RUNTIME` for later plan commands. Keep projects and runtime directories outside
+generated bundles so they remain rebuildable.
 
-## How it works
+Offline graph operations are deterministic and credential-free. Online semantic search
+retains the Mem0-g/vector-store backend and model overrides (`PLAN_EMBED_MODEL`,
+`PLAN_LLM_MODEL`, `PLAN_RERANK_MODEL`, `PLAN_SUMMARY_MODEL`). Configure `OPENAI_API_KEY`
+only through your environment or a local ignored `.env`; never paste keys into chat.
+Python dependencies remain pinned in `src/requirements.txt`.
 
-**The plan graph** (`src/plan_store/`) is the system's memory. Each statement is one node;
-dependency edges live in node metadata and are kept equal to the real Lean dependency graph by
-`sync-lean`. The graph also stores **informal notes** — research conclusions with provenance (an
-`explore` answer, a counterexample, a dead approach) — searchable alongside the formal statements
-but excluded from the dependency graph and from export. Notes are revised or deleted when a
-kernel-checked result contradicts them.
+Setup can create a project Lean-LSP MCP descriptor. Host registration differs: a project
+`.mcp.json` alone does not automatically register a Codex MCP server. The provider adapters
+explain this boundary; Lean CLI/build verification remains available without MCP.
 
-All access goes through one CLI:
+## What Gold means
 
-```bash
-.venv/bin/python src/cli.py --data <DATA_DIR> <command>
-# Windows / Git Bash: .venv/Scripts/python.exe
-```
+Gold applies to the **exact frozen theorem**, not to every claim surrounding it. It requires:
 
-**Skills run in the main context** — the orchestrator and all plan edits live there.
+- a clean Lean build and root-axiom/dependency-cone checks;
+- faithful statements, explicit premises, actual intended objects/adapters, and no circular
+  definitions or toy-model substitutions;
+- complete theorem-face and goal-alignment audits;
+- hashed evidence, independent audits, and a successful live Lean-backed grade audit.
 
-**Subagents run in separate contexts** and return only a short summary:
+A conditional theorem can be Gold: **if its explicitly named conditions hold, then its
+conclusion follows**. That does not establish the conditions or solve an unconditional question.
 
-- `compile-fix` — iterates one Lean file until it compiles clean, without weakening the statement.
-  Dispatched in the background, **up to 4 in parallel**, never two on the same file, each banked
-  immediately on completion. This is *signature-locked parallelism*: a node's proof needs only its
-  dependencies' signatures, so files are scaffolded early and proved concurrently.
-- `explore` — researches a subtopic (web search, numerical experiments, tool downloads) and
-  reports an evidence-backed answer. Read-only toward the repo.
+A literature boundary is a last-resort **cost-dependent** decision: the result must be
+standard/well supported, absent from the pinned Mathlib after concrete search, and
+disproportionately costly to formalize after documented alternative attempts. Its exact
+primary source must be stored locally under `ref/` or `refs/`, matched clause by clause,
+and independently audited twice. Cost does not excuse a mismatched source or a new assumption.
+Gold source boundaries remain explicit proposition binders, not new Lean `axiom` declarations.
 
-**`.mcp.json`** (generated by `/init_merlean`) registers the `lean-lsp` MCP server, run from the
-shared `.venv` via `python -m lean_lsp_mcp` — no `uv` required. Subagents fall back to `lake build`
-if it is absent.
+See [the trust and instantiation gates](docs/trust-and-instantiation-gates.md).
+Both providers use the **same executable grade engine**. Lite cannot call the Gold recorder.
+Paper-writing preserves conditions, grades, source evidence, and the distinction between a
+proved implication and an answer to an open question.
 
----
+## Preserved capabilities
 
-## Results
+The simpler public interface retains plan-graph search and memory, deterministic offline
+operations, initialization, representation scouting, natural-language proof ledgers, adversarial
+skeptic audits, targeted Lean certificates, full proof/formalization, failure logs, and resume.
 
-**The ACMAX conjecture** (Kolokolnikov, Conjecture 1.5,
-[arXiv:1412.6147](https://arxiv.org/abs/1412.6147)) — among all simple graphs on `n` vertices with
-exactly `2(n−2)` edges, algebraic connectivity is maximized by `K_{2,n−2}`, at exactly `2`.
-Open in the mathematics literature when the campaign began, and now **proved for every `n ≥ 4`** —
-`ACMax.acmax_conjecture`, axiom-clean, with no `sorry` anywhere in its dependency cone.
+Heavy retains signature-locked parallel proof workers and full transitive certification.
+GPT research/paper agents and their GPT workers default to **gpt-6-astra**; explicit choices
+and Claude model settings are preserved. Explicit model-capacity failures retry every 10 seconds,
+while API rate limits retain their existing wait/backoff behavior. These are live-agent dispatch
+rules, not a mechanism to restart a host-level main-model failure.
 
-*(Separate repository — link to follow.)*
+Paper-writing retains the eight-stage protocol, new-paper composition, non-destructive
+`-vN` refinement, resume, main-result locks, coverage ledgers, compression and appendix checks,
+safe reference-source extraction, bibliography verification, isolated compilation, and read-only
+audits. The same deterministic paper tools are now available to both providers.
 
----
+## Maintained layout
+
+~~~text
+workflows/
+  merlean-lite.md       public Lite entry template
+  merlean-heavy.md      public Heavy entry template
+  paper-writing.md      public paper entry template
+  common.md            shared policy and mode/grade contract
+  *.md, paper/         internal procedures and paper references
+ports/                 Claude and Codex adapters
+roles/                 internal specialist instructions
+src/                   one plan/grade/paper implementation
+scripts/               setup, CLI wrappers, generation and auditing
+templates/             safe environment and Lean starter templates
+tests/                 regression, semantic, routing and bundle tests
+docs/                  strict trust boundary and migration notes
+examples/              small retained demonstration
+plugins/               generated six packages, committed for marketplace installation
+~~~
+
+The former `.claude/`, root `skills/` and `agents/`, `research-agent/`, and
+`paper-writing-agent/` maintained copies are replaced by this shared source. Internal roles
+are not extra user-facing agents. The public tree includes only the small demo under `examples/`; research campaigns,
+private session records, credentials, and runtime caches do not belong in distributions.
+
+## Verification and packaging
+
+~~~bash
+python3 -m unittest discover -s tests
+python3 scripts/audit_research_runtime_parity.py
+python3 scripts/audit_codex_release.py
+python3 scripts/build_bundles.py --archives dist
+~~~
+
+The archive auditor covers both providers despite its historical filename. It rejects unsafe
+paths, secrets, missing runtime files, extra public skills, broken package references, and
+false-Gold acceptance. For reproducible committed releases, use
+`python3 scripts/build_codex_release.py --treeish <commit> --out dist`; this compatibility
+command now generates all six bundles from that Git tree. Publish only audited committed source and deterministic packages, with explicit
+authorization for remote updates.
+
+Archive creation refuses existing differing ZIPs and symlinks; choose a fresh output
+directory for a changed release. Retained examples are historical demonstrations, not
+newly recertified claims under the current Heavy gates.
+
+Authorship and licensing are retained in [NOTICE](NOTICE) and [LICENSE](LICENSE).
+Privacy, terms and security: [PRIVACY](PRIVACY.md), [TERMS](TERMS.md), [SECURITY](SECURITY.md).
 
 ## Citation
 
-If you use MerLean or build on this result, please cite:
-
-```bibtex
+~~~bibtex
 @misc{ren2026merleanagenticframeworkautoformalization,
-      title={MerLean: An Agentic Framework for Autoformalization in Quantum Computation}, 
-      author={Yuanjie Ren and Jinzheng Li and Yidi Qi},
-      year={2026},
-      eprint={2602.16554},
-      archivePrefix={arXiv},
-      primaryClass={cs.LO},
-      url={https://arxiv.org/abs/2602.16554}, 
+  title={MerLean: An Agentic Framework for Autoformalization in Quantum Computation},
+  author={Yuanjie Ren and Jinzheng Li and Yidi Qi},
+  year={2026},
+  eprint={2602.16554},
+  archivePrefix={arXiv},
+  primaryClass={cs.LO},
+  url={https://arxiv.org/abs/2602.16554}
 }
-
 @misc{li2026merleanproverrecursiveloopingharness,
-      title={MerLean-Prover: A Recursive Looping Harness for Lean 4 Theorem Proving}, 
-      author={Jinzheng Li and Zeru Zhu and Yuanjie Ren},
-      year={2026},
-      eprint={2605.26959},
-      archivePrefix={arXiv},
-      primaryClass={cs.LO},
-      url={https://arxiv.org/abs/2605.26959}, 
+  title={MerLean-Prover: A Recursive Looping Harness for Lean 4 Theorem Proving},
+  author={Jinzheng Li and Zeru Zhu and Yuanjie Ren},
+  year={2026},
+  eprint={2605.26959},
+  archivePrefix={arXiv},
+  primaryClass={cs.LO},
+  url={https://arxiv.org/abs/2605.26959}
 }
-
 @misc{zhu2026maximizingalgebraicconnectivity2n2,
-      title={Maximizing Algebraic Connectivity with $2(n-2)$ Edges: The Large Vertex Number Case}, 
-      author={Zeru Zhu and Jinzheng Li and Yuanjie Ren and Ji Liu},
-      year={2026},
-      eprint={2608.07360},
-      archivePrefix={arXiv},
-      primaryClass={math.CO},
-      url={https://arxiv.org/abs/2608.07360}, 
+  title={Maximizing Algebraic Connectivity with $2(n-2)$ Edges: The Large Vertex Number Case},
+  author={Zeru Zhu and Jinzheng Li and Yuanjie Ren and Ji Liu},
+  year={2026},
+  eprint={2608.07360},
+  archivePrefix={arXiv},
+  primaryClass={math.CO},
+  url={https://arxiv.org/abs/2608.07360}
 }
-```
-
----
-
-## Layout
-
-```
-.claude/                  # RESEARCH AGENT, Claude Code version (live — the repo is the install)
-  agents/                 #   compile-fix, explore, route-scout, nl-prover, skeptic
-  skills/                 #   formalize, prove, auto-research, lite-research,
-                          #   formalizeproblem, plan-graph, write-paper
-    init_merlean/         #   setup skill: SKILL.md + setup.sh + templates/
-  settings.json
-.claude-plugin/           # plugin manifest + marketplace (install without cloning — Quick start)
-.agents/plugins/          # Codex marketplace catalog for the two Codex-native plugins
-skills/                   # the same skills, plugin edition (paths via ${CLAUDE_PLUGIN_ROOT})
-agents/                   # the same five subagents, plugin edition
-src/
-  cli.py                  # CLI launcher
-  plan_store/             # the plan-graph package (store, lean_sync, search, tests, ...)
-  requirements.txt        # pinned venv deps, incl. lean-lsp-mcp
-
-research-agent/
-  README.md               # the agent + its version matrix
-  claude/                 #   pointer to .claude/ + src/ above
-  codex/                  # RESEARCH AGENT, Codex version (standalone port + offline plan store)
-
-paper-writing-agent/
-  README.md               # the agent + its version matrix
-  claude/AGENT.md         # PAPER-WRITING AGENT, Claude Code version (the 8-step protocol)
-  codex/                  # PAPER-WRITING AGENT, Codex version (+ refine mode, paperctl)
-
-examples/                 # complete campaign records (incl. the small LA demo + its paper)
-refs/                     # verified arXiv TeX sources used by campaigns
-AGENTS.md                 # conventions for agents working in this repo
-
-# generated at install time by /init_merlean (git-ignored):
-.venv/  .env  .mcp.json
-lean-toolchain  lakefile.toml  MerLeanExperiment.lean  lake-manifest.json  .lake/
-```
-
-Secrets (`.env`, `*.key`), virtualenvs, Python caches, Lean build artifacts (`.lake/`), and
-`.claude/` runtime state are git-ignored. Per-target plan data (`*_data/`) is **not** ignored — it
-is committed alongside the campaign it belongs to, so a library ships with the plan graph, notes,
-and verification scripts that produced it.
-
----
-
-## Contributing
-
-Issues and pull requests are welcome.
-
-
-## Built on
-
-Two projects shaped this one directly, and both are permissively licensed:
-
-- **[Mem0](https://github.com/mem0ai/mem0)** (Apache-2.0) — the plan graph is a Mem0 2.x graph
-  store: every statement and note is a memory node, and dependency edges live in node metadata.
-  Used as a pinned dependency (`mem0ai==2.0.7`); no Mem0 source is vendored here.
-- **[LeanSearch v2](https://github.com/frenzymath/LeanSearch-v2)** (Apache-2.0) — plan retrieval
-  follows its two-stage shape, embedding recall then reranking, and the reranker instruction in
-  `src/plan_store/rerank.py` is adapted from theirs. Modifications are described in `NOTICE`.
-
-Also gratefully used: [Lean 4](https://lean-lang.org) and
-[Mathlib](https://github.com/leanprover-community/mathlib4) (Apache-2.0),
-[lean-lsp-mcp](https://github.com/oOo0oOo/lean-lsp-mcp), and
-[Qdrant](https://github.com/qdrant/qdrant) as the vector store.
-
-Helpers under `src/plan_store/_vendor/` are pure functions carried over from this project's own
-predecessor plan store, not third-party code.
-
-## License
-
-Licensed under the **Apache License, Version 2.0** — see [`LICENSE`](LICENSE), with attribution
-notices in [`NOTICE`](NOTICE).
-
-Both upstream projects above are Apache-2.0, so this is a compatible relicense-free reuse: the
-attribution and change-statement requirements of Apache §4 are satisfied by `NOTICE` and the
-header of `src/plan_store/rerank.py`.
+~~~

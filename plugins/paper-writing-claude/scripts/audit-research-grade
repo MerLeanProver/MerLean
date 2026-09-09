@@ -1,0 +1,6 @@
+#!/usr/bin/env python3
+"""Compatibility executable; one maintained audit entrypoint."""
+from audit_research_grade import main
+
+if __name__ == "__main__":
+    raise SystemExit(main())

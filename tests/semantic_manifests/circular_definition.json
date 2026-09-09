@@ -1,0 +1,10 @@
+{
+  "grade": "GOLD",
+  "target_signature_hash": "o8-heron",
+  "dossier_signature_hash": "o8-heron",
+  "axioms": ["propext", "Classical.choice", "Quot.sound"],
+  "assumptions": [],
+  "interfaces": [],
+  "definition_independence": false,
+  "independent_gold_audit": true
+}

@@ -6,6 +6,8 @@ graph in an embedded Qdrant there, and on close auto-writes the derived views
 so all state for a target lives in one place, mirroring the predecessor layout.
 """
 
+from __future__ import annotations
+
 import json
 from datetime import datetime
 from pathlib import Path
@@ -14,6 +16,7 @@ from typing import Any, Iterable
 from . import config
 from ._vendor.toposort import topologically_sort_statements, find_dependency_cycles
 from ._vendor.cone import forward_dependency_cone
+from .grade_policy import GOLD_INVALIDATING_FIELDS, invalidate_gold_for_mutation, reject_untrusted_gold
 
 COMPLETED_STATES = {"completed", "completed_axiom"}
 
@@ -31,6 +34,11 @@ NODE_KEYS = [
     "proof", "anchor", "mathlib_types", "lean_path", "hierarchy_level",
     "corrections", "status", "do_not_import", "declarations_defined",
     "imports", "source_start", "source_end",
+    "proof_status", "claim_scope", "result_scope", "condition_ids", "boundary_axiom_ids",
+    "question_status", "research_value", "evidence_closure_sha256", "trust_roots", "open_assumptions",
+    "intended_instance", "source_locators", "goal_id", "goal_role", "consumer_path",
+    "directionality", "goal_contract_sha256", "goal_alignment_sha256",
+    "intended_model_bindings", "verification_grade", "gold_audit",
 ]
 
 # Extra provenance fields kept on informal notes (type "Note"): a note is a belief with
@@ -42,7 +50,14 @@ NOTE_KEYS = [
 
 # statements.json export field policy (matches the original on-disk shape).
 _REQUIRED = ["type", "name", "content", "dependencies", "hierarchy_level"]
-_OPTIONAL = ["proof", "anchor", "mathlib_types", "lean_path", "corrections"]
+_OPTIONAL = [
+    "proof", "anchor", "mathlib_types", "lean_path", "corrections",
+    "proof_status", "claim_scope", "result_scope", "condition_ids", "boundary_axiom_ids",
+    "question_status", "research_value", "evidence_closure_sha256", "trust_roots", "open_assumptions",
+    "intended_instance", "source_locators", "goal_id", "goal_role", "consumer_path",
+    "directionality", "goal_contract_sha256", "goal_alignment_sha256",
+    "intended_model_bindings", "verification_grade", "gold_audit",
+]
 
 
 def _now() -> str:
@@ -69,6 +84,27 @@ def _default_node(stmt: dict) -> dict:
         "imports": list(stmt.get("imports") or []),
         "source_start": stmt.get("source_start"),
         "source_end": stmt.get("source_end"),
+        "proof_status": stmt.get("proof_status"),
+        "claim_scope": stmt.get("claim_scope"),
+        "result_scope": stmt.get("result_scope"),
+        "condition_ids": list(stmt.get("condition_ids") or []),
+        "boundary_axiom_ids": list(stmt.get("boundary_axiom_ids") or []),
+        "question_status": stmt.get("question_status"),
+        "research_value": stmt.get("research_value"),
+        "evidence_closure_sha256": stmt.get("evidence_closure_sha256"),
+        "trust_roots": list(stmt.get("trust_roots") or []),
+        "open_assumptions": list(stmt.get("open_assumptions") or []),
+        "intended_instance": stmt.get("intended_instance"),
+        "source_locators": list(stmt.get("source_locators") or []),
+        "goal_id": stmt.get("goal_id"),
+        "goal_role": stmt.get("goal_role"),
+        "consumer_path": list(stmt.get("consumer_path") or []),
+        "directionality": stmt.get("directionality"),
+        "goal_contract_sha256": stmt.get("goal_contract_sha256"),
+        "goal_alignment_sha256": stmt.get("goal_alignment_sha256"),
+        "intended_model_bindings": list(stmt.get("intended_model_bindings") or []),
+        "verification_grade": stmt.get("verification_grade"),
+        "gold_audit": stmt.get("gold_audit"),
     }
 
 
@@ -162,6 +198,7 @@ class PlanGraph:
 
     # ------------------------------------------------------------------ CRUD
     def add(self, stmt: dict) -> dict:
+        reject_untrusted_gold(stmt)
         sid = stmt["id"]
         if sid in self._id2mid:
             return self.update(sid, **{k: v for k, v in stmt.items() if k != "id"})
@@ -200,20 +237,41 @@ class PlanGraph:
         return node
 
     def update(self, sid: str, **fields: Any) -> dict:
+        reject_untrusted_gold(fields)
         node = self._nodes.get(sid)
         if node is None:
             raise KeyError(f"unknown statement {sid!r}")
         fields.pop("id", None)
         fields.pop("statement_id", None)
+        fields = invalidate_gold_for_mutation(node, fields)
         node.update(fields)
         if _is_meta(node):
             node["updated"] = _now()
+        return self._write(sid)
+
+    def _record_audited_gold(self, sid: str, receipt: dict[str, Any]) -> dict:
+        """Persist a Heavy-auditor receipt; ordinary CRUD cannot call this path."""
+        node = self._nodes.get(sid)
+        if node is None:
+            raise KeyError(f"unknown statement {sid!r}")
+        if _is_meta(node) or node.get("status") != "completed":
+            raise ValueError("audited Gold requires a completed formal statement")
+        if node.get("proof_status") != "completed":
+            raise ValueError("audited Gold requires proof_status=completed")
+        if not isinstance(receipt, dict) or receipt.get("status") != "passed":
+            raise ValueError("audited Gold requires a passed structured receipt")
+        node["verification_grade"] = "GOLD"
+        node["gold_audit"] = dict(receipt)
         return self._write(sid)
 
     def remove_fields(self, sid: str, fields: Iterable[str]) -> dict:
         node = self._nodes.get(sid)
         if node is None:
             raise KeyError(f"unknown statement {sid!r}")
+        fields = list(fields)
+        if node.get("verification_grade") == "GOLD" and GOLD_INVALIDATING_FIELDS.intersection(fields):
+            node["verification_grade"] = None
+            node["gold_audit"] = None
         for f in fields:
             if f not in ("statement_id", "id"):
                 node.pop(f, None)

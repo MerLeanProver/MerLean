@@ -1,24 +1,22 @@
 {
   "name": "merlean",
-  "description": "MerLean — autonomous mathematics agents over a plan graph, from informal question to machine-checked Lean 4 + Mathlib result.",
+  "description": "Three mathematics agents for Claude Code: Lite, Heavy, and Paper-writing.",
   "owner": {
     "name": "MerLean authors",
     "url": "https://github.com/MerLeanProver"
   },
   "plugins": [
     {
-      "name": "merlean",
-      "source": "./",
-      "description": "Autonomous math research agents over a plan graph — /formalize, /prove, /auto-research, /lite-research, /plan-graph, /formalizeproblem, /write-paper, /init_merlean.",
-      "version": "1.0.0",
-      "author": {
-        "name": "Jinzheng Li, Zeru Zhu, Yuanjie Ren",
-        "url": "https://github.com/MerLeanProver/MerLean"
-      },
-      "homepage": "https://github.com/MerLeanProver/MerLean",
-      "repository": "https://github.com/MerLeanProver/MerLean",
-      "license": "Apache-2.0",
-      "keywords": ["lean4", "mathlib", "theorem-proving", "autoformalization", "math-research", "agents"]
+      "name": "merlean-lite-claude",
+      "source": "./plugins/merlean-lite-claude"
+    },
+    {
+      "name": "merlean-heavy-claude",
+      "source": "./plugins/merlean-heavy-claude"
+    },
+    {
+      "name": "paper-writing-claude",
+      "source": "./plugins/paper-writing-claude"
     }
   ]
 }

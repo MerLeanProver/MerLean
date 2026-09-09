@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-labelledby="title desc">
+  <title id="title">MerLean logo</title>
+  <desc id="desc">A blue square containing a white proof turnstile and green check mark.</desc>
+  <rect width="512" height="512" rx="96" fill="#173B67"/>
+  <path d="M120 128v232h52V257h137v-50H172v-79z" fill="#FFFFFF"/>
+  <path d="M239 331l55 55 109-139" fill="none" stroke="#5ED39A" stroke-width="46" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

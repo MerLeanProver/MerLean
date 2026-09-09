@@ -1,6 +1,6 @@
 # Shared dependencies for the .venv used by the plan-graph / plan-search /
-# formalize / prove skills. Build the venv with the `init_merlean` skill
-# (`bash .claude/skills/init_merlean/setup.sh`; all platforms, on Windows use Git Bash)
+# shared Lite/Heavy research workflows. Build the venv with scripts/setup.sh
+# (`bash scripts/setup.sh --project <LIB_DIR>`; Windows uses Git Bash)
 # or manually:  python -m venv .venv && .venv/*/python -m pip install -r src/requirements.txt
 # Pinned freeze; mem0ai is the only "mem0" surface and is installed directly into .venv.
 annotated-doc==0.0.4
@@ -44,7 +44,7 @@ protobuf==6.33.6
 pydantic==2.13.4
 pydantic_core==2.46.4
 Pygments==2.20.0
-python-dotenv==1.2.2
+python-dotenv==1.2.1
 pytz==2026.2
 pywin32==312 ; sys_platform == "win32"
 qdrant-client==1.18.0

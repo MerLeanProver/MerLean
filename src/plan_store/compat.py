@@ -9,7 +9,14 @@ from pathlib import Path
 
 # Fields always emitted; optional ones only when set (matches statements.json).
 _REQUIRED = ["type", "name", "content", "dependencies", "hierarchy_level"]
-_OPTIONAL = ["proof", "anchor", "mathlib_types", "lean_path", "corrections"]
+_OPTIONAL = [
+    "proof", "anchor", "mathlib_types", "lean_path", "corrections",
+    "proof_status", "claim_scope", "result_scope", "condition_ids", "boundary_axiom_ids",
+    "question_status", "research_value", "evidence_closure_sha256", "trust_roots", "open_assumptions",
+    "intended_instance", "source_locators", "goal_id", "goal_role", "consumer_path",
+    "directionality", "goal_contract_sha256", "goal_alignment_sha256",
+    "intended_model_bindings", "verification_grade", "gold_audit",
+]
 
 
 def import_statements_json(graph, path) -> int:

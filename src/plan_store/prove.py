@@ -6,6 +6,8 @@ proof closure has no residual `sorry`/`admit`/`axiom` (not the full paper-faithf
 check, which would also flag legitimate one-line wrapper proofs).
 """
 
+from __future__ import annotations
+
 import re
 from pathlib import Path
 

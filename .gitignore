@@ -1,4 +1,4 @@
-# --- generated at install time by /init_merlean (templates live in .claude/skills/init_merlean/templates/) ---
+# --- generated project runtime (source templates live in templates/) ---
 /.mcp.json
 /lean-toolchain
 /lakefile.toml

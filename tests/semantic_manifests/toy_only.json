@@ -1,0 +1,10 @@
+{
+  "grade": "GOLD",
+  "target_signature_hash": "stage8",
+  "dossier_signature_hash": "stage8",
+  "axioms": ["propext", "Classical.choice", "Quot.sound"],
+  "assumptions": [],
+  "interfaces": [{"name": "RationalRigidityFib", "intended_instance": null, "toy_instances": ["PUnit", "zeroModel"]}],
+  "definition_independence": true,
+  "independent_gold_audit": true
+}

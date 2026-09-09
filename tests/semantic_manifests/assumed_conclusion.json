@@ -1,0 +1,10 @@
+{
+  "grade": "GOLD",
+  "target_signature_hash": "eg3-target-v1",
+  "dossier_signature_hash": "eg3-target-v1",
+  "axioms": ["propext", "Classical.choice", "Quot.sound"],
+  "assumptions": [{"name": "primaryVanishes", "kind": "residual", "status": "open", "relation_to_goal": "equivalent"}],
+  "interfaces": [{"name": "MixS7aDataStrict", "intended_instance": null, "toy_instances": ["pointModel"]}],
+  "definition_independence": true,
+  "independent_gold_audit": true
+}
