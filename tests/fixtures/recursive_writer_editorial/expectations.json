@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "purpose": "Coordinator-only answer key. Do not give this file or evaluator output to reviewers before their independent reports.",
+  "cases": [
+    {"role": "faithfulness", "case_id": "f01", "expected": "required_repair", "reason": "The nonnegativity hypothesis was lost; x=-1 contradicts the new claim."},
+    {"role": "faithfulness", "case_id": "f02", "expected": "required_repair", "reason": "The abstract strengthens a statement about squares to all real polynomials."},
+    {"role": "faithfulness", "case_id": "f03", "expected": "required_repair", "reason": "The stated specialization gives 2^(3-1)=4, not 8; 3!=6 is less than 8."},
+    {"role": "faithfulness", "case_id": "f04", "expected": "required_repair", "reason": "The macro changes the quantified domain despite identical theorem text."},
+    {"role": "faithfulness", "case_id": "f05", "expected": "required_repair", "reason": "Cumulative comparison with the last valid PASS exposes the still-missing y>0 hypothesis."},
+    {"role": "faithfulness", "case_id": "f06", "expected": "no_required_repair", "reason": "Renaming the bound variable preserves the domain, conclusion, and proof."},
+    {"role": "narrative", "case_id": "n01", "expected": "required_repair", "reason": "The central cancellation mechanism is unexplained while routine index setup dominates."},
+    {"role": "narrative", "case_id": "n02", "expected": "no_required_repair", "reason": "The motivated consecutive-square identity explains cancellation and an example supports it."},
+    {"role": "narrative", "case_id": "n03", "expected": "no_required_repair", "reason": "The sign reasoning is necessary detail for the approved beginner-facing objective."},
+    {"role": "notation", "case_id": "d01", "expected": "required_repair", "reason": "An unused artificial wrapper obscures the elementary claim without serving a consumer."},
+    {"role": "notation", "case_id": "d02", "expected": "no_required_repair", "reason": "The appendix reminder agrees with a single authoritative definition."},
+    {"role": "notation", "case_id": "d03", "expected": "no_required_repair", "reason": "Conventional f notation is precise; there is no universal calligraphic-map requirement."},
+    {"role": "wording", "case_id": "w01", "expected": "required_repair", "reason": "Ornate promotional wording substantially burdens a simple assertion."},
+    {"role": "wording", "case_id": "w02", "expected": "required_repair", "reason": "Unnecessary synonymous terms conflict with the canonical term for the same bound."},
+    {"role": "wording", "case_id": "w03", "expected": "no_required_repair", "reason": "Different terms name intentionally distinct mathematical and procedural concepts."},
+    {"role": "wording", "case_id": "w04", "expected": "no_required_repair", "reason": "The qualification and sign explanation are useful mathematical content, not redundant padding."}
+  ]
+}

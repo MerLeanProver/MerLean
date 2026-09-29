@@ -6,7 +6,7 @@ Three mathematics agents, available in **Claude Code and Codex**: six entrypoint
 | --- | --- | --- |
 | **MerLean -lite** | Explore a question, develop a natural-language proof, debate it, and Lean-check its weakest links | **SILVER** |
 | **MerLean -heavy** | Fully prove a result, formalize an existing proof or paper, or complete Lean proofs | **GOLD** |
-| **Paper-writing** | Compose, refine, resume, or audit a mathematics paper | Preserve the recorded research grade |
+| **Paper-writing** | Synthesize research notes into a paper prospectus; compose, refine, resume, or audit papers | Preserve the recorded research grade |
 
 **Lite is on by default.** Bare MerLean selects Lite; `-heavy` is the explicit name for
 the former “Lite off” state. The flags are mutually exclusive. Silver and Gold are evidence
@@ -28,6 +28,13 @@ There is no separate public formalization agent. Heavy contains the paper-formal
 Lean-proof completion, statement-translation, and open-question procedures. An existing proof
 can eliminate proof-discovery work; it does **not** eliminate the work of faithfully encoding
 objects, filling missing lemmas, auditing citations, and checking the entire Lean dependency cone.
+
+For accumulated research notes, ask Paper-writing to **synthesize** them first. It inventories
+supported claims, proposes coherent paper candidates, pauses for author approval of an exact
+angle, and then performs focused correctness and novelty reviews. It stops at a decision and
+handoff, including "no compelling paper identified" when appropriate. No campaign, Lean, or
+LaTeX installation is required for synthesis; drafting and further research are separate requests.
+See the [research-to-paper synthesis guide](docs/research-to-paper-synthesis.md).
 
 ## Install from the plugin marketplaces
 
@@ -156,10 +163,19 @@ and Claude model settings are preserved. Explicit model-capacity failures retry 
 while API rate limits retain their existing wait/backoff behavior. These are live-agent dispatch
 rules, not a mechanism to restart a host-level main-model failure.
 
-Paper-writing retains the eight-stage protocol, new-paper composition, non-destructive
-`-vN` refinement, resume, main-result locks, coverage ledgers, compression and appendix checks,
-safe reference-source extraction, bibliography verification, isolated compilation, and read-only
-audits. The same deterministic paper tools are now available to both providers.
+New Paper-writing composition and refinement use a persistent planner–writer loop with
+independent faithfulness, narrative, notation, and wording checkers. All roles review each
+frozen manuscript revision; the default limit is five revisions before author direction.
+Faithfulness preserves accepted mathematics rather than reproving it, and useful expansion
+is permitted. See the [recursive-writer guide](docs/recursive-writer.md).
+
+Saved schema-1 runs retain the eight-stage protocol. Both paths preserve non-destructive
+`-vN` refinement, main-result identities, recoverable coverage, verified references,
+isolated compilation, and read-only resume/audit. No additional public agent or model
+launcher is introduced.
+Its synthesis mode adds source snapshots, revision-bound author approval, persistent candidate
+and review evidence, read-only resume/audit, and an explicitly authorized composition handoff.
+The CLI checks evidence consistency; it neither proves mathematics nor certifies publishability.
 
 ## Maintained layout
 

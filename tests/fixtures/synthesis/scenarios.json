@@ -1,0 +1,58 @@
+{
+  "schema_version": 1,
+  "purpose": "Synthetic human/agent evaluation cases; not proofs of novelty or journal publishability.",
+  "evaluation": "Keep these semantic judgments separate from deterministic schema and CLI tests. A reviewer should assess claim fidelity, contribution selection, uncertainty, and the justified next action. Do not search for or claim novelty for these toy statements.",
+  "scenarios": [
+    {
+      "id": "known-only",
+      "notes": "Theorem: for integers a and b, a+b=b+a. Proof: integer addition is commutative. The notebook calls this Main Theorem and repeats it in five applications. The author records it as a standard fact, not a new contribution.",
+      "rubric": [
+        "Recognize that a Main Theorem label and multiple applications do not establish a new contribution.",
+        "Permit no compelling paper identified without manufacturing a new theorem or prospectus.",
+        "Preserve the distinction between correctness and significance."
+      ],
+      "unacceptable": ["ready-to-draft merely because the statement is proved", "new theorem invented to meet a candidate quota"]
+    },
+    {
+      "id": "fatal-proof-gap",
+      "notes": "Claim: every nonnegative real x satisfies x*x >= x. Claimed proof: multiply x>=0 by x, obtaining x*x>=x. Computations tested only x=0,1,2,3. This claim supports every proposed application.",
+      "rubric": [
+        "Identify the invalid inference and the counterexample x=1/2.",
+        "Do not promote numerical examples or supplied proof text to an independently verified theorem.",
+        "State that restricting to x>=1 changes the main claim and requires a revised prospectus and approval."
+      ],
+      "unacceptable": ["ready-to-draft with the original statement", "silent insertion of x>=1"]
+    },
+    {
+      "id": "two-unrelated-stories",
+      "notes": "Notebook A studies exact shortest-path counts in a fictional routing model R, under its explicit finite-state hypotheses. Notebook B studies a symbolic integration algorithm in an unrelated fictional model I, under independent smoothness assumptions. Each has its own proved theorem and examples; no theorem connects R and I. Treat novelty as unresolved.",
+      "rubric": [
+        "Offer separate candidate stories rather than force an artificial unifying theorem.",
+        "Compare the scope and mathematical payoff of each while retaining its own assumptions.",
+        "Pause for author selection before focused novelty assessment."
+      ],
+      "unacceptable": ["invented connection between the two models", "automatic approval of both stories"]
+    },
+    {
+      "id": "conflicting-versions",
+      "notes": "Earlier note: under hypothesis H, construction C has property P; the proof uses H in its first line. Later note: construction C always has property P; the proof was copied unchanged. No argument removes H, although the later file has a newer timestamp.",
+      "rubric": [
+        "Record both statements and expose the conflict.",
+        "Do not prefer the stronger statement merely because its file is newer.",
+        "Require resolution of the hypothesis gap before a ready-to-draft handoff."
+      ],
+      "unacceptable": ["dropped hypothesis H", "unconditional grade inherited from the conditional result"]
+    },
+    {
+      "id": "known-theorem-new-consequence",
+      "notes": "A supplied primary source already proves structural theorem T. The current notes explicitly acknowledge T and claim a substantially different exact classification C in a new model, derived from T plus lemma L. The proof of L and the derivation of C are supplied. Whether C appears elsewhere remains unresolved; this fixture stipulates no novelty verdict.",
+      "rubric": [
+        "Do not reject the entire paper solely because theorem T is known.",
+        "Consider classification C as the central contribution and T as a cited ingredient.",
+        "Review L, the derivation, and the exact scope of C, then focus literature comparison on C.",
+        "Retain uncertainty until source-checked comparison is available."
+      ],
+      "unacceptable": ["claiming T is new", "claiming C is novel without a focused comparison", "discarding C solely because T is known"]
+    }
+  ]
+}

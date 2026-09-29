@@ -1,0 +1,74 @@
+{
+  "schema_version": 1,
+  "instruction": "Review each applicable case independently as a complete supplied excerpt. Use your current role and rubric. Assume the mathematics; assess presentation, not new proofs. Do not infer missing introductory prose or import context from another case. A concrete reader obstacle, not a preference for extra prose, is needed for a required repair.",
+  "cases": [
+    {
+      "case_id": "Q17",
+      "roles": ["narrative", "notation"],
+      "audience": "Graduate readers in algorithms and elementary optimization",
+      "lines": [
+        "We seek a certified workload-dependent cost guarantee. The switching budget below is used throughout our cost theorem and determines its parameter regimes. Let the normalized workload x be a positive real number.",
+        "Definition. Set q(x)=sqrt(x)+1 for 0<x<=16, and q(x)=x^(1/4)+3 for x>16.",
+        "Proposition. The available implementations achieve cost at most q(x).",
+        "Proof. Implementation A has certified cost at most sqrt(x)+1, while implementation B has certified cost at most x^(1/4)+3. Choose the implementation with the smaller certified bound. Writing z=x^(1/4), the difference of the bounds is z^2-z-2=(z-2)(z+1), so they agree at x=16 and the displayed branches follow."
+      ]
+    },
+    {
+      "case_id": "R42",
+      "roles": ["narrative", "notation"],
+      "audience": "Graduate readers in algorithms and elementary optimization",
+      "lines": [
+        "We seek a certified workload-dependent cost guarantee. The switching budget below is used throughout our cost theorem and determines its parameter regimes. Let the normalized workload x be a positive real number.",
+        "Two implementations offer different cost bounds: A has sqrt(x)+1, and B has x^(1/4)+3. The first has lower overhead but faster growth. Their bounds cross at x=16; choosing the smaller bound gives the following switching budget.",
+        "Definition. Set q(x)=sqrt(x)+1 for 0<x<=16, and q(x)=x^(1/4)+3 for x>16.",
+        "Proposition. The available implementations achieve cost at most q(x).",
+        "Proof. Choose the implementation with the smaller certified bound. Writing z=x^(1/4), their difference is z^2-z-2=(z-2)(z+1), proving the claimed branches."
+      ]
+    },
+    {
+      "case_id": "J08",
+      "roles": ["narrative", "notation"],
+      "audience": "Graduate readers in algorithms and elementary optimization",
+      "lines": [
+        "The real residual e is the signed difference between an estimate and its target. We measure its magnitude by the usual absolute value.",
+        "Thus |e|=e when e>=0 and |e|=-e when e<0. All subsequent error tolerances apply to |e|."
+      ]
+    },
+    {
+      "case_id": "M63",
+      "roles": ["narrative", "notation"],
+      "audience": "Graduate readers in algorithms and elementary optimization",
+      "lines": [
+        "The implementation can choose either of two certified cost bounds u and v, both nonnegative. It always chooses the cheaper guarantee.",
+        "Write c=min{u,v}. The following calculations use c as the resulting certified cost bound."
+      ]
+    },
+    {
+      "case_id": "T29",
+      "roles": ["narrative"],
+      "audience": "Graduate linear-algebra readers familiar with determinants but not assumed to know graph determinant expansions",
+      "lines": [
+        "We want an expansion of det(I+tBB^T) in which the nonnegative coefficients have a combinatorial meaning. Here B is an oriented incidence matrix of a finite simple graph: an edge column is +1 at one endpoint, -1 at the other, and zero elsewhere. The following algebraic and combinatorial facts will be useful.",
+        "Lemma 1. Columns of B indexed by an edge set S are linearly independent exactly when S has no cycle, that is, when S is a forest.",
+        "Proof. An oriented cycle gives a signed column dependence. Conversely, remove a leaf of a nonempty forest. Its row forces the coefficient of its unique incident edge to vanish in any dependence; induction finishes the argument.",
+        "Lemma 2. For a real r-by-m matrix B, det(I_r+tBB^T)=sum_S t^|S| det(B_S^T B_S), where S ranges over all subsets of columns of size at most r and the empty determinant is one.",
+        "Proof. Expand by principal minors and apply the Cauchy-Binet identity to each minor.",
+        "We can now read the coefficients as weighted forest counts. The second lemma expands each coefficient into Gram determinants of column sets; the first identifies the nonzero terms as precisely forests. The Gram determinants are nonnegative, making both the coefficient signs and their graph interpretation explicit."
+      ]
+    },
+    {
+      "case_id": "V51",
+      "roles": ["narrative"],
+      "audience": "Graduate linear-algebra readers familiar with determinants but not assumed to know graph determinant expansions",
+      "lines": [
+        "We want an expansion of det(I+tBB^T) in which the nonnegative coefficients have a combinatorial meaning. Here B is an oriented incidence matrix of a finite simple graph: an edge column is +1 at one endpoint, -1 at the other, and zero elsewhere.",
+        "We obtain it by expressing the coefficients as sums of Gram determinants of column sets. Such a determinant is nonzero precisely for independent columns. The next two facts identify these column sets as forests and supply the determinant expansion, linking the coefficients to weighted forest counts.",
+        "Lemma 1. Columns of B indexed by an edge set S are linearly independent exactly when S has no cycle, that is, when S is a forest.",
+        "Proof. An oriented cycle gives a signed column dependence. Conversely, remove a leaf of a nonempty forest. Its row forces the coefficient of its unique incident edge to vanish in any dependence; induction finishes the argument.",
+        "Lemma 2. For a real r-by-m matrix B, det(I_r+tBB^T)=sum_S t^|S| det(B_S^T B_S), where S ranges over all subsets of columns of size at most r and the empty determinant is one.",
+        "Proof. Expand by principal minors and apply the Cauchy-Binet identity to each minor.",
+        "Together these facts give the announced weighted-forest expansion, with nonnegative Gram-determinant weights."
+      ]
+    }
+  ]
+}

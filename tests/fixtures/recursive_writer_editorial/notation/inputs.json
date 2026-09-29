@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "role": "notation",
+  "instructions": "Review each independent excerpt for useful, precise, consistent definitions and notation. Allow authoritative definitions followed by helpful reminders and conventional alternative symbols. Return an independent report; do not inspect expectation files or other roles' verdicts.",
+  "cases": [
+    {
+      "case_id": "d01",
+      "brief": "A short real-analysis note with no later use of the introduced symbol.",
+      "registry": {},
+      "draft": "For real x, define the Quadratic Nonnegativity Evaluation Transform QNET(x) := x^2. Theorem. QNET(x) >= 0. Proof. A real square is nonnegative. This is the end of the note."
+    },
+    {
+      "case_id": "d02",
+      "brief": "An excerpt from a long note; a reminder at the start of its appendix is intentional.",
+      "registry": {"A": "the fixed finite set defined in the setup"},
+      "draft": "Setup. Fix a finite set A and write |A| for its cardinality. Main result. A bijection from A to a finite set B implies |A|=|B|. Appendix. Recall that A is the fixed finite set from the setup. The following argument counts its elements using the given bijection."
+    },
+    {
+      "case_id": "d03",
+      "brief": "A conventional function example; no special calligraphic notation policy applies.",
+      "registry": {"f": "the squaring map from the real numbers to the nonnegative real numbers"},
+      "draft": "Define f: R -> [0,infinity) by f(x)=x^2. The map f is not injective, since f(1)=f(-1)."
+    }
+  ]
+}

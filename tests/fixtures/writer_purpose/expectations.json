@@ -1,0 +1,12 @@
+{
+  "schema_version": 1,
+  "visibility": "Coordinator only; do not give expectations to reviewers.",
+  "cases": [
+    {"case_id": "X06", "roles": ["narrative"], "expected": "required_repair", "reason": "The general compression goal explains a short code, but not why the next ingredient imposes coordinate retention. The intended unrestricted-versus-restricted comparison appears after both proofs. Identifying invertibility and storage computations alone does not establish that purpose."},
+    {"case_id": "P38", "roles": ["narrative"], "expected": "no_required_repair", "reason": "One shared introduction explains the comparison and both ingredient roles. Do not demand additional introductions, a different order, or a proof preview."},
+    {"case_id": "L72", "roles": ["narrative"], "expected": "no_required_repair", "reason": "The initial question already names the comparison. Matching achievable recoding length and coordinate-retention lower bound to it is immediate; another block preamble is unnecessary."},
+    {"case_id": "B24", "roles": ["narrative"], "expected": "no_required_repair", "reason": "Routine inequalities transparently advance the explicitly stated composition goal. Do not invent a detour requiring separate motivation."},
+    {"case_id": "C91", "roles": ["narrative"], "expected": "required_repair", "reason": "The preamble describes both results' content but still does not explain why comparison to coordinate retention is the next question. Detect that purpose gap rather than absence of any introduction or difficulty of the proof."}
+  ],
+  "semantic_check": "Evaluate returned reasoning, not just verdicts. These cases intentionally probe a judgment boundary; report disagreements rather than retuning a reviewer toward the expected outcome. They do not establish whole-paper reliability."
+}

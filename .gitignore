@@ -43,6 +43,14 @@ __pycache__/
 # --- local release products ---
 /dist/
 
+# Private paper/research runs: keep these outside the public tree when possible.
+# Root anchoring leaves intentional test fixtures and the public demo visible.
+/.merlean-local/
+/private/
+/runs/
+/artifacts/
+.pytest_cache/
+
 # LaTeX build artifacts (all campaigns; PDFs stay tracked as deliverables)
 examples/*/paper/*.aux
 examples/*/paper/*.log

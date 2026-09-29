@@ -21,8 +21,14 @@ LABEL_RE = re.compile(r"\\label\{([^{}]+)\}")
 REF_RE = re.compile(r"\\(?:ref|eqref|pageref|autoref|cref|Cref)\{([^{}]+)\}")
 CITE_RE = re.compile(r"\\cite[a-zA-Z*]*\s*(?:\[[^\]]*\]\s*)*\{([^{}]+)\}")
 INCLUDE_RE = re.compile(
-    r"\\(?P<command>input|include|subfile|bibliography|addbibresource)\s*\{(?P<target>[^{}]+)\}"
+    r"\\(?P<command>input|include|subfile|bibliography|addbibresource)\s*"
+    r"(?:\[[^\]]*\]\s*)?\{(?P<target>[^{}]+)\}"
 )
+PACKAGE_RE = re.compile(
+    r"\\(?P<command>usepackage|RequirePackage|RequirePackageWithOptions|documentclass|LoadClass|LoadClassWithOptions)\s*"
+    r"(?:\[[^\]]*\]\s*)?\{(?P<target>[^{}]+)\}"
+)
+TEX_SOURCE_SUFFIXES = {".tex", ".sty", ".cls", ".def", ".clo", ".cfg", ".fd", ".ltx"}
 DISPLAY_RE = re.compile(r"\\\[(.*?)\\\]", re.DOTALL)
 FOOTNOTE_RE = re.compile(r"\\footnote\{((?:[^{}]|\{[^{}]*\})*)\}", re.DOTALL)
 
@@ -56,6 +62,57 @@ def normalize_tex(text: str) -> str:
 
 def digest_text(text: str) -> str:
     return hashlib.sha256(normalize_tex(text).encode("utf-8")).hexdigest()
+
+
+def local_tex_dependencies(path: Path, master_dir: Path, *, text: str | None = None) -> list[tuple[str, Path, int]]:
+    """Find literal local TeX dependencies without querying or executing a toolchain.
+
+    Installed packages/classes are not unresolved local files. Explicit input and
+    bibliography paths remain recorded when missing. Prefer the master document's
+    directory, with a containing-file fallback for standalone subfiles.
+    """
+    if text is None:
+        text = strip_comments(path.read_text(encoding="utf-8-sig"))
+    matches = sorted([*INCLUDE_RE.finditer(text), *PACKAGE_RE.finditer(text)], key=lambda match: match.start())
+    result = []
+    for match in matches:
+        command = match.group("command")
+        package = command in {"usepackage", "RequirePackage", "RequirePackageWithOptions"}
+        document_class = command in {"documentclass", "LoadClass", "LoadClassWithOptions"}
+        suffix = ".sty" if package else ".cls" if document_class else (
+            ".bib" if command in {"bibliography", "addbibresource"} else ".tex")
+        for raw in match.group("target").split(","):
+            if not raw.strip():
+                continue
+            child = Path(raw.strip())
+            if not child.suffix:
+                child = child.with_suffix(suffix)
+            if not child.is_absolute():
+                primary, fallback = master_dir / child, path.parent / child
+                child = primary if primary.exists() or not fallback.exists() else fallback
+            child = child.absolute()
+            if (package or document_class) and not child.is_file():
+                continue
+            result.append((command, child, match.start()))
+    return result
+
+
+def _local_context_sources(path: Path, master_dir: Path, seen: set[Path] | None = None) -> list[dict[str, Any]]:
+    """Hash local macro files without mistaking their definitions for paper units."""
+    seen = seen if seen is not None else set()
+    real_path = path.resolve()
+    if real_path in seen:
+        return []
+    seen.add(real_path)
+    rows = [{"path": str(path), "sha256": hashlib.sha256(path.read_bytes()).hexdigest(), "kind": "tex-context"}]
+    for command, child, _ in local_tex_dependencies(path, master_dir):
+        if not child.is_file():
+            rows.append({"path": str(child), "sha256": None, "kind": command, "missing": True})
+        elif command in {"bibliography", "addbibresource"}:
+            rows.append({"path": str(child), "sha256": hashlib.sha256(child.read_bytes()).hexdigest(), "kind": "bib"})
+        else:
+            rows.extend(_local_context_sources(child, master_dir, seen))
+    return rows
 
 
 def _environment_re(names: set[str]) -> re.Pattern[str]:
@@ -124,8 +181,10 @@ def inventory_tex(
     *,
     _seen: set[Path] | None = None,
     _forced_appendix: bool = False,
+    _master_dir: Path | None = None,
 ) -> dict[str, Any]:
     path = path.expanduser().absolute()
+    master_dir = _master_dir if _master_dir is not None else path.parent
     real_path = path.resolve()
     seen = _seen if _seen is not None else set()
     if real_path in seen:
@@ -269,7 +328,9 @@ def inventory_tex(
     structural_only = re.compile(
         r"(?:\\(?:section|subsection|subsubsection|chapter|part)\*?\s*\{[^{}]*\}\s*)+"
     )
-    for index, match in enumerate(re.finditer(r"\S(?:.*?\S)?(?=\n\s*\n|\Z)", body_text, re.DOTALL), 1):
+    # Allow trailing spaces and CRLF at paragraph boundaries without normalizing
+    # the text: match offsets must still address the original verbatim source.
+    for index, match in enumerate(re.finditer(r"\S(?:.*?\S)?(?=[^\S\n]*\n\s*\n|\s*\Z)", body_text, re.DOTALL), 1):
         raw = match.group(0).strip()
         normalized = normalize_tex(raw)
         if len(normalized) < 8 or structural_only.fullmatch(normalized):
@@ -291,40 +352,33 @@ def inventory_tex(
         "path": str(path), "sha256": source_digest, "kind": "tex",
     }]
     appendix_offset = text.find("\\appendix")
-    for command, target, offset in include_matches:
-        raw_targets = [piece.strip() for piece in target.split(",") if piece.strip()]
-        for raw_target in raw_targets:
-            child = Path(raw_target)
-            if not child.is_absolute():
-                child = path.parent / child
-            if command in {"input", "include", "subfile"} and not child.suffix:
-                child = child.with_suffix(".tex")
-            if command in {"bibliography", "addbibresource"} and not child.suffix:
-                child = child.with_suffix(".bib")
-            child = child.absolute()
-            if not child.is_file():
-                source_files.append({"path": str(child), "sha256": None, "kind": command, "missing": True})
-                continue
-            if command in {"input", "include", "subfile"}:
-                child_inventory = inventory_tex(
-                    child,
-                    _seen=seen,
-                    _forced_appendix=_forced_appendix or (appendix_offset >= 0 and offset > appendix_offset),
-                )
-                prefix = f"included:{child.name}:{digest_text(str(child.resolve()))[:8]}:"
-                for child_unit in child_inventory["units"]:
-                    copied = dict(child_unit)
-                    copied["id"] = prefix + copied["id"]
-                    units.append(copied)
-                label_occurrences.extend(child_inventory.get("label_occurrences", []))
-                refs.extend(value for value in child_inventory["references"] if value not in refs)
-                citations.extend(value for value in child_inventory["citations"] if value not in citations)
-                includes.extend(value for value in child_inventory["includes"] if value not in includes)
-                source_files.extend(child_inventory.get("source_files", []))
-            else:
-                source_files.append({
-                    "path": str(child), "sha256": hashlib.sha256(child.read_bytes()).hexdigest(), "kind": "bib",
-                })
+    for command, child, offset in local_tex_dependencies(path, master_dir, text=text):
+        if not child.is_file():
+            source_files.append({"path": str(child), "sha256": None, "kind": command, "missing": True})
+            continue
+        if command in {"input", "include", "subfile"}:
+            child_inventory = inventory_tex(
+                child,
+                _seen=seen,
+                _forced_appendix=_forced_appendix or (appendix_offset >= 0 and offset > appendix_offset),
+                _master_dir=master_dir,
+            )
+            prefix = f"included:{child.name}:{digest_text(str(child.resolve()))[:8]}:"
+            for child_unit in child_inventory["units"]:
+                copied = dict(child_unit)
+                copied["id"] = prefix + copied["id"]
+                units.append(copied)
+            label_occurrences.extend(child_inventory.get("label_occurrences", []))
+            refs.extend(value for value in child_inventory["references"] if value not in refs)
+            citations.extend(value for value in child_inventory["citations"] if value not in citations)
+            includes.extend(value for value in child_inventory["includes"] if value not in includes)
+            source_files.extend(child_inventory.get("source_files", []))
+        elif command in {"bibliography", "addbibresource"}:
+            source_files.append({
+                "path": str(child), "sha256": hashlib.sha256(child.read_bytes()).hexdigest(), "kind": "bib",
+            })
+        else:
+            source_files.extend(_local_context_sources(child, master_dir))
 
     labels = list(dict.fromkeys(label_occurrences))
     deduplicated_sources: list[dict[str, Any]] = []

@@ -1,0 +1,13 @@
+{
+  "schema_version": 1,
+  "visibility": "Coordinator-only; withhold this file and expected verdicts from reviewers.",
+  "cases": [
+    {"case_id": "Q17", "roles": ["narrative", "notation"], "expected": "required_repair", "reason": "The central switching budget has a stated use but its two implementations and crossover rationale appear only in the subsequent proof. Detect missing first-encounter orientation, not a demand to reprove its threshold."},
+    {"case_id": "R42", "roles": ["narrative", "notation"], "expected": "no_required_repair", "reason": "The same consequential branches are motivated by the competing costs and crossover before definition; no additional paragraph or preliminary derivation is needed."},
+    {"case_id": "J08", "roles": ["narrative", "notation"], "expected": "no_required_repair", "reason": "Standard absolute value has a clear local purpose and evident cases; a piecewise formula alone is not a defect."},
+    {"case_id": "M63", "roles": ["narrative", "notation"], "expected": "no_required_repair", "reason": "A short inference from choosing the cheaper guarantee makes the minimum notation adequate without extra motivation."},
+    {"case_id": "T29", "roles": ["narrative"], "expected": "required_repair", "reason": "The goal is stated, but the link from column independence to Gram determinants and coefficient expansion is supplied only after both proofs. A generic announcement of facts does not orient this detour for the stated audience."},
+    {"case_id": "V51", "roles": ["narrative"], "expected": "no_required_repair", "reason": "One block introduction already connects both ingredients to the goal. Do not demand a separate preamble for each lemma or a different lemma order."}
+  ],
+  "semantic_check": "Check actual reasoning after all reports return. Matching FAILs for unrelated reasons do not count as intended detection. Controls must have no unsupported required repairs. This authored regression is not a held-out or statistically calibrated benchmark."
+}

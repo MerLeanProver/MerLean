@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "role": "narrative",
+  "instructions": "Review each independent manuscript excerpt as a complete miniature note for its approved audience and purpose. Assess narrative and proportional explanation, not new mathematical research. Optional tastes must not become required repairs. Return an independent report and do not inspect expectation files or other roles' verdicts.",
+  "cases": [
+    {
+      "case_id": "n01",
+      "brief": "An undergraduate note whose central purpose is to explain the telescoping mechanism behind the sum of the first n odd numbers.",
+      "draft": "Introduction. We study 1 + 3 + ... + (2n-1). Setup. An integer is called positive when it is greater than zero. For example, 1 is positive. So are 2 and 3. Throughout, n is positive. The symbol n labels the last index, and the indices begin at 1. Thus the first index is 1 and the last index is n. Theorem. The sum is n^2. Proof. This follows by algebra. Conclusion. Telescoping is the useful mechanism."
+    },
+    {
+      "case_id": "n02",
+      "brief": "An undergraduate note whose central purpose is to explain the telescoping mechanism behind the sum of the first n odd numbers.",
+      "draft": "Why do successive odd numbers add up to a square? The useful observation is that the kth odd number is the difference between consecutive squares: 2k-1 = k^2-(k-1)^2. For a positive integer n, summing these differences from k=1 to n cancels each intermediate square, leaving n^2-0^2. Hence 1+3+...+(2n-1)=n^2. For instance, 1+3+5=9. The same cancellation method applies whenever summands can be written as consecutive differences."
+    },
+    {
+      "case_id": "n03",
+      "brief": "A beginner-facing explanation of why division by a positive quantity preserves an inequality; sign reasoning is the main teaching objective.",
+      "draft": "Suppose a <= b and c > 0. Since b-a >= 0 and 1/c > 0, their product (b-a)/c is nonnegative. Therefore b/c-a/c >= 0, which is precisely a/c <= b/c. Positivity of c matters: division by a negative number would reverse the inequality. For example, dividing 1 <= 2 by -1 gives -1 >= -2."
+    }
+  ]
+}

@@ -1,0 +1,55 @@
+{
+  "schema_version": 1,
+  "instruction": "Review each applicable case independently as a complete supplied excerpt under your current role and rubric. Assume its mathematics. Do not import context from another case or infer missing introductory prose. Identify concrete reader obstacles, not merely a preference for more explanation. Line numbers are one-based indices of the lines array.",
+  "cases": [
+    {
+      "case_id": "X06", "roles": ["narrative"],
+      "audience": "Graduate readers in discrete mathematics and algorithms",
+      "lines": [
+        "We study lossless fixed-length binary encodings: decoding must recover the input exactly, and shorter codewords use less storage. Fix n>=3 and let W consist of the length-n binary words with exactly one nonzero coordinate. An invertibility argument and a storage count provide the needed certificates.",
+        "Lemma 1. W can be encoded in ceil(log_2 n) bits. Proof. Encode the position of the nonzero coordinate using the binary representation of its index minus one, padded to that length. The index uniquely recovers the word.",
+        "Lemma 2. An injective map on W obtained by retaining a fixed subset of input coordinates must retain at least n-1 coordinates. Proof. If two coordinates are omitted, words supported on those coordinates both map to zero. Retaining n-1 coordinates is injective: the zero image identifies the sole omitted position.",
+        "These facts show a limitation of coordinate retention as a compression method. The second lemma gives its best possible storage, while the first supplies an alternative encoding with logarithmic storage. Thus allowing recoding can sharply improve on retaining input coordinates."
+      ]
+    },
+    {
+      "case_id": "P38", "roles": ["narrative"],
+      "audience": "Graduate readers in discrete mathematics and algorithms",
+      "lines": [
+        "We study lossless fixed-length binary encodings: decoding must recover the input exactly, and shorter codewords use less storage. Fix n>=3 and let W consist of the length-n binary words with exactly one nonzero coordinate.",
+        "We compare arbitrary recoding with the restricted method of retaining a fixed set of input coordinates. The first fact gives a compact recoding; the second gives the best storage possible under coordinate retention. Their comparison will show how much the restriction can cost.",
+        "Lemma 1. W can be encoded in ceil(log_2 n) bits. Proof. Encode the position of the nonzero coordinate using the binary representation of its index minus one, padded to that length. The index uniquely recovers the word.",
+        "Lemma 2. An injective map on W obtained by retaining a fixed subset of input coordinates must retain at least n-1 coordinates. Proof. If two coordinates are omitted, words supported on those coordinates both map to zero. Retaining n-1 coordinates is injective: the zero image identifies the sole omitted position.",
+        "Thus allowing recoding can sharply improve on retaining input coordinates."
+      ]
+    },
+    {
+      "case_id": "L72", "roles": ["narrative"],
+      "audience": "Graduate readers in discrete mathematics and algorithms",
+      "lines": [
+        "Does storing a fixed subset of the original coordinates compress as well as arbitrary lossless recoding? We compare the numbers of stored bits for words in W, the length-n binary words with exactly one nonzero coordinate, where n>=3. Codewords have fixed length and must recover the input exactly.",
+        "Lemma 1. W can be encoded in ceil(log_2 n) bits. Proof. Encode the position of the nonzero coordinate using the binary representation of its index minus one, padded to that length. The index uniquely recovers the word.",
+        "Lemma 2. An injective map on W obtained by retaining a fixed subset of input coordinates must retain at least n-1 coordinates. Proof. If two coordinates are omitted, words supported on those coordinates both map to zero. Retaining n-1 coordinates is injective: the zero image identifies the sole omitted position.",
+        "The comparison is ceil(log_2 n) versus n-1 stored bits. For large n, coordinate retention can therefore be much more expensive."
+      ]
+    },
+    {
+      "case_id": "B24", "roles": ["narrative"],
+      "audience": "Graduate readers familiar with Euclidean norms and linear maps",
+      "lines": [
+        "For a real matrix A, let ||A|| be its operator norm induced by Euclidean length. We show that composition satisfies ||AB||<=||A||||B||, for compatible real matrices A and B.",
+        "Proof. For each unit vector x, ||ABx||<=||A||||Bx||<=||A||||B||. Taking the supremum over unit vectors x proves the claim."
+      ]
+    },
+    {
+      "case_id": "C91", "roles": ["narrative"],
+      "audience": "Graduate readers in discrete mathematics and algorithms",
+      "lines": [
+        "We study lossless fixed-length binary encodings: decoding must recover the input exactly, and shorter codewords use less storage. Fix n>=3 and let W consist of the length-n binary words with exactly one nonzero coordinate. The next facts give an achievable length and count the coordinates that must be retained.",
+        "Lemma 1. W can be encoded in ceil(log_2 n) bits. Proof. Encode the position of the nonzero coordinate using the binary representation of its index minus one, padded to that length. The index uniquely recovers the word.",
+        "Lemma 2. An injective map on W obtained by retaining a fixed subset of input coordinates must retain at least n-1 coordinates. Proof. If two coordinates are omitted, words supported on those coordinates both map to zero. Retaining n-1 coordinates is injective: the zero image identifies the sole omitted position.",
+        "These facts show a limitation of coordinate retention as a compression method. The second lemma gives its best possible storage, while the first supplies an alternative encoding with logarithmic storage. Thus allowing recoding can sharply improve on retaining input coordinates."
+      ]
+    }
+  ]
+}

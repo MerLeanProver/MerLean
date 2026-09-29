@@ -24,7 +24,8 @@ VERSION = "2.0.0"
 SOURCE_DIRS = ("src", "workflows", "roles", "ports", "templates", "assets")
 SOURCE_FILES = (
     "LICENSE", "NOTICE", "PRIVACY.md", "SECURITY.md", "SUPPORT.md", "TERMS.md",
-    "docs/trust-and-instantiation-gates.md", "scripts/merlean", "scripts/merlean-agent",
+    "docs/trust-and-instantiation-gates.md", "docs/research-to-paper-synthesis.md", "docs/recursive-writer.md",
+    "scripts/merlean", "scripts/merlean-agent",
     "scripts/paperctl", "scripts/setup.sh", "scripts/audit_research_grade.py",
     "scripts/audit-research-grade",
 )
@@ -61,7 +62,7 @@ def bundle_entries(provider: str, agent: str, root: Path = ROOT) -> dict[str, tu
     description = {
         "merlean-lite": "Default NL-first mathematical research to Silver; targeted Lean checks.",
         "merlean-heavy": "Full proving and supplied-proof formalization to strictly audited Gold.",
-        "paper-writing": "Compose, refine, resume, and audit mathematics papers without losing results.",
+        "paper-writing": "Synthesize research notes; compose, refine, resume, and audit papers with preserved evidence.",
     }[agent]
     manifest = {
         "name": name, "version": VERSION, "description": description,

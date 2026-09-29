@@ -65,11 +65,62 @@ def cmd_next_version(args) -> None:
 def cmd_init_refine(args) -> None:
     emit(init_refine(
         Path(args.source), Path(args.work_dir) if args.work_dir else None, dry_run=args.dry_run,
+        workflow_version=1 if args.legacy_workflow else 2,
+        authoritative_sources=[Path(value) for value in args.authoritative_sources or []],
+        brief=Path(args.brief) if args.brief else None,
+        max_review_rounds=args.max_review_rounds,
     ))
 
 
 def cmd_init_compose(args) -> None:
-    emit(init_compose(Path(args.output), Path(args.work_dir) if args.work_dir else None))
+    emit(init_compose(
+        Path(args.output), Path(args.work_dir) if args.work_dir else None,
+        from_synthesis=Path(args.from_synthesis) if args.from_synthesis else None,
+        workflow_version=1 if args.legacy_workflow else 2,
+        authoritative_sources=[Path(value) for value in args.authoritative_sources or []],
+        brief=Path(args.brief) if args.brief else None,
+        max_review_rounds=args.max_review_rounds,
+    ))
+
+
+def cmd_record_writing_plan(args) -> None:
+    from .recursive_writer import record_plan
+    emit(record_plan(Path(args.state), Path(args.plan)))
+
+
+def cmd_freeze_revision(args) -> None:
+    from .recursive_writer import freeze_revision
+    emit(freeze_revision(Path(args.state)))
+
+
+def cmd_review_packet(args) -> None:
+    from .recursive_writer import review_packet
+    emit(review_packet(Path(args.state), args.role, args.reviewer_id))
+
+
+def cmd_record_review(args) -> None:
+    from .recursive_writer import record_review
+    emit(record_review(Path(args.state), Path(args.report)))
+
+
+def cmd_continue_writing(args) -> None:
+    from .recursive_writer import continue_writing
+    emit(continue_writing(Path(args.state), Path(args.approval_evidence), args.additional_rounds))
+
+
+def cmd_init_synthesize(args) -> None:
+    from .synthesis import init_synthesize
+    emit(init_synthesize([Path(source) for source in args.source], Path(args.work_dir)))
+
+
+def cmd_select_synthesis(args) -> None:
+    from .synthesis import select_synthesis
+    emit(select_synthesis(Path(args.state), args.candidate, Path(args.approval_evidence)))
+
+
+def cmd_refresh_synthesis(args) -> None:
+    from .synthesis import refresh_synthesis
+    emit(refresh_synthesis(Path(args.state)))
 
 
 def cmd_inventory(args) -> None:
@@ -91,6 +142,9 @@ def cmd_critical_path(args) -> None:
 
 
 def cmd_lock_main(args) -> None:
+    state = json.loads(Path(args.state).read_text(encoding="utf-8"))
+    if state.get("mode") == "synthesize":
+        raise ValueError("use select-synthesis to approve a prospectus, not lock-main")
     emit(lock_main_results(Path(args.state), args.label, args.unit_id))
 
 
@@ -250,8 +304,11 @@ def _compose_artifact_errors(state: dict) -> list[str]:
     main_path = work / "03-main-results.json"
     if main_path.is_file():
         main_results = json.loads(main_path.read_text(encoding="utf-8")).get("main_results", [])
-        if not 2 <= len(main_results) <= 4:
-            errors.append("compose mode requires two to four locked main results")
+        if state.get("synthesis_origin"):
+            from .synthesis_bridge import audit_imported_main_results
+            errors.extend(audit_imported_main_results(state, main_results, inventory))
+        if not 1 <= len(main_results) <= 4:
+            errors.append("compose mode requires one to four locked main results")
         graph_ids = [item.get("graph_node_id") for item in main_results]
         candidate_labels = [item.get("candidate_label") for item in main_results]
         if len(graph_ids) != len(set(graph_ids)) or len(candidate_labels) != len(set(candidate_labels)):
@@ -471,6 +528,20 @@ def _compose_artifact_errors(state: dict) -> list[str]:
 def cmd_audit(args) -> None:
     state_path = Path(args.state)
     state = json.loads(state_path.read_text(encoding="utf-8"))
+    if state.get("mode") == "synthesize":
+        from .synthesis import audit_synthesis
+        report = audit_synthesis(state_path, require_all_gates=args.require_all_gates)
+        emit(report)
+        if not report["pass"]:
+            raise SystemExit(4)
+        return
+    if state.get("schema_version") == 2:
+        from .recursive_writer import audit_writing
+        report = audit_writing(state_path, require_complete=args.require_all_gates)
+        emit(report)
+        if not report["pass"]:
+            raise SystemExit(4)
+        return
     before = sha256_file(Path(state["source"])) if state.get("source") else None
     verify_source(state)
     verify_output(state, require_reservation=True)
@@ -513,10 +584,14 @@ def cmd_audit(args) -> None:
         raise SystemExit(4)
 
 
-def _compile_tex(tex: Path, timeout: int) -> dict:
+def _compile_tex(tex: Path, timeout: int, retain_dir: Path | None = None) -> dict:
     tex = tex.expanduser().absolute()
     if not tex.is_file() or tex.suffix.lower() != ".tex":
         raise ValueError(f"expected a TeX file: {tex}")
+    if retain_dir is not None:
+        retain_dir = retain_dir.expanduser().absolute()
+        if retain_dir.exists() or retain_dir.is_symlink():
+            raise FileExistsError(f"refusing to overwrite retained build: {retain_dir}")
     latexmk = shutil.which("latexmk")
     pdflatex = shutil.which("pdflatex")
     if not latexmk and not pdflatex:
@@ -540,10 +615,10 @@ def _compile_tex(tex: Path, timeout: int) -> dict:
         environment = os.environ.copy()
         for variable in ("TEXINPUTS", "BIBINPUTS", "BSTINPUTS"):
             existing = environment.get(variable, "")
-            environment[variable] = f"{tex.parent}//:{existing}"
+            environment[variable] = f"{tex.parent.as_posix()}//{os.pathsep}{existing}"
         if latexmk:
             command = [
-                latexmk, "-pdf", "-halt-on-error", "-file-line-error",
+                latexmk, "-norc", "-pdf", "-halt-on-error", "-file-line-error",
                 "-interaction=nonstopmode", "-latexoption=-no-shell-escape",
                 f"-outdir={outdir}", str(tex),
             ]
@@ -601,17 +676,42 @@ def _compile_tex(tex: Path, timeout: int) -> dict:
             report["tail"] = (result.stdout + "\n" + result.stderr)[-5000:]
         pdfinfo = shutil.which("pdfinfo")
         if pdfinfo and pdf.is_file():
-            info = subprocess.run([pdfinfo, str(pdf)], text=True, capture_output=True)
+            # Metadata may use a local Windows code page even under Python's
+            # UTF-8 mode. Only the ASCII page-count field is needed here.
+            info = subprocess.run([pdfinfo, str(pdf)], capture_output=True)
             pages = next(
-                (line.split(":", 1)[1].strip() for line in info.stdout.splitlines() if line.startswith("Pages:")),
+                (line.split(b":", 1)[1].strip() for line in (info.stdout or b"").splitlines()
+                 if line.startswith(b"Pages:")),
                 None,
-            )
-            report["pdf_pages"] = int(pages) if pages and pages.isdigit() else None
+            ) if info.returncode == 0 else None
+            report["pdf_pages"] = int(pages) if pages and pages.isdigit() and int(pages) > 0 else None
+        if pdf.is_file():
+            report["pdf_sha256"] = sha256_file(pdf)
+        if retain_dir is not None:
+            # Retention happens only after the source-tree mutation check. This
+            # is an explicitly requested build artifact, never a source edit.
+            retain_dir.mkdir(parents=True, exist_ok=False)
+            for artifact, field in ((pdf, "retained_pdf"), (log_path, "retained_log")):
+                if artifact.is_file():
+                    destination = retain_dir / artifact.name
+                    with artifact.open("rb") as source_handle, destination.open("xb") as output_handle:
+                        shutil.copyfileobj(source_handle, output_handle)
+                    report[field] = str(destination)
+            if report.get("retained_log"):
+                report["log_sha256"] = sha256_file(Path(report["retained_log"]))
         return report
 
 
 def cmd_compile(args) -> None:
-    report = _compile_tex(Path(args.tex), args.timeout)
+    if args.state:
+        if args.tex:
+            raise ValueError("compile accepts a TeX path or --state, not both")
+        from .recursive_writer import compile_revision
+        report = compile_revision(Path(args.state), timeout=args.timeout)
+    elif args.tex:
+        report = _compile_tex(Path(args.tex), args.timeout)
+    else:
+        raise ValueError("compile requires a TeX path or --state")
     emit(report)
     if not report["pass"]:
         raise SystemExit(5)
@@ -658,6 +758,8 @@ def cmd_safe_extract(args) -> None:
 
 def cmd_shrink_stats(args) -> None:
     state = json.loads(Path(args.state).read_text(encoding="utf-8"))
+    if state.get("mode") == "synthesize":
+        raise ValueError("synthesis has no manuscript to shrink")
     output = Path(state["output"])
     snapshot_path = Path(state["work_dir"]) / "05-pre-shrink-inventory.json"
     snapshot = json.loads(snapshot_path.read_text(encoding="utf-8")) if snapshot_path.is_file() else None
@@ -723,12 +825,67 @@ def build_parser() -> argparse.ArgumentParser:
     command.add_argument("source")
     command.add_argument("--work-dir")
     command.add_argument("--dry-run", action="store_true")
+    command.add_argument("--source", dest="authoritative_sources", action="append",
+                         help="authoritative notes (repeatable); defaults to the original manuscript")
+    command.add_argument("--brief", help="author-approved writing brief")
+    command.add_argument("--max-review-rounds", type=int, default=5)
+    command.add_argument("--legacy-workflow", action="store_true",
+                         help="initialize the preserved schema-1 writing contract")
     command.set_defaults(func=cmd_init_refine)
 
     command = sub.add_parser("init-compose", help="initialize a new-paper gated run")
     command.add_argument("--output", required=True)
     command.add_argument("--work-dir")
+    command.add_argument("--from-synthesis", help="import a ready, author-approved synthesis handoff")
+    command.add_argument("--source", dest="authoritative_sources", action="append",
+                         help="authoritative notes (repeatable)")
+    command.add_argument("--brief", help="author-approved writing brief")
+    command.add_argument("--max-review-rounds", type=int, default=5)
+    command.add_argument("--legacy-workflow", action="store_true",
+                         help="initialize the preserved schema-1 writing contract")
     command.set_defaults(func=cmd_init_compose)
+
+    command = sub.add_parser("record-writing-plan", help="record the coordinator's consolidated writing task")
+    command.add_argument("--state", required=True)
+    command.add_argument("--plan", required=True)
+    command.set_defaults(func=cmd_record_writing_plan)
+
+    command = sub.add_parser("freeze-revision", help="freeze the manuscript dependency closure for review")
+    command.add_argument("--state", required=True)
+    command.set_defaults(func=cmd_freeze_revision)
+
+    command = sub.add_parser("review-packet", help="prepare a focused, revision-bound reviewer packet")
+    command.add_argument("--state", required=True)
+    command.add_argument("--role", required=True,
+                         choices=("faithfulness", "faithfulness-secondary", "narrative", "notation", "wording", "layout"))
+    command.add_argument("--reviewer-id", required=True)
+    command.set_defaults(func=cmd_review_packet)
+
+    command = sub.add_parser("record-review", help="validate and register independently produced review evidence")
+    command.add_argument("--state", required=True)
+    command.add_argument("--report", required=True)
+    command.set_defaults(func=cmd_record_review)
+
+    command = sub.add_parser("continue-writing", help="record author authorization for additional reviewed revisions")
+    command.add_argument("--state", required=True)
+    command.add_argument("--approval-evidence", required=True)
+    command.add_argument("--additional-rounds", type=int, required=True)
+    command.set_defaults(func=cmd_continue_writing)
+
+    command = sub.add_parser("init-synthesize", help="snapshot research notes without creating a manuscript")
+    command.add_argument("--source", action="append", required=True)
+    command.add_argument("--work-dir", required=True)
+    command.set_defaults(func=cmd_init_synthesize)
+
+    command = sub.add_parser("select-synthesis", help="freeze a candidate with recorded author approval")
+    command.add_argument("--state", required=True)
+    command.add_argument("--candidate", required=True)
+    command.add_argument("--approval-evidence", required=True)
+    command.set_defaults(func=cmd_select_synthesis)
+
+    command = sub.add_parser("refresh-synthesis", help="archive a synthesis revision and refresh its explicit sources")
+    command.add_argument("--state", required=True)
+    command.set_defaults(func=cmd_refresh_synthesis)
 
     command = sub.add_parser("inventory", help="inventory TeX coverage units")
     command.add_argument("tex")
@@ -752,8 +909,8 @@ def build_parser() -> argparse.ArgumentParser:
 
     command = sub.add_parser("gate", help="record one gate outcome")
     command.add_argument("--state", required=True)
-    command.add_argument("--name", choices=GATES, required=True)
-    command.add_argument("--status", choices=("pass", "fail", "pending"), required=True)
+    command.add_argument("--name", required=True, help="gate name validated against the saved run mode")
+    command.add_argument("--status", choices=("pass", "fail", "pending", "not_applicable"), required=True)
     command.add_argument("--evidence", action="append")
     command.set_defaults(func=cmd_gate)
 
@@ -771,7 +928,8 @@ def build_parser() -> argparse.ArgumentParser:
     command.set_defaults(func=cmd_audit)
 
     command = sub.add_parser("compile", help="compile a TeX candidate in an isolated directory")
-    command.add_argument("tex")
+    command.add_argument("tex", nargs="?")
+    command.add_argument("--state", help="compile and record the current frozen recursive-writer revision")
     command.add_argument("--timeout", type=int, default=180)
     command.set_defaults(func=cmd_compile)
 
@@ -798,7 +956,7 @@ def main() -> None:
     args = parser.parse_args()
     try:
         args.func(args)
-    except (ValueError, FileNotFoundError, FileExistsError, RuntimeError, json.JSONDecodeError) as error:
+    except (ValueError, OSError, RuntimeError, json.JSONDecodeError) as error:
         print(f"paperctl: {error}", file=sys.stderr)
         raise SystemExit(2) from error
 

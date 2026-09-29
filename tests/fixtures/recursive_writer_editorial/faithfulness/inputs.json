@@ -1,0 +1,48 @@
+{
+  "schema_version": 1,
+  "role": "faithfulness",
+  "instructions": "Review each independent case against its supplied authoritative mathematics. Assume those source claims are correct; assess the draft's faithfulness, not novelty or style. For a follow-up case, compare cumulatively with the last valid PASS. Return an independent report using the documented evaluation report schema. Do not inspect expectation files or other roles' verdicts.",
+  "cases": [
+    {
+      "case_id": "f01",
+      "brief": "A short note about the principal square root on the real numbers; preserve the stated domain.",
+      "source": "Theorem. For every real x >= 0, sqrt(x^2) = x. Proof. x is nonnegative and its square is x^2, so uniqueness of the principal square root gives the conclusion.",
+      "draft": "Theorem. For every real x, sqrt(x^2) = x. Proof. Uniqueness of the principal square root gives the conclusion."
+    },
+    {
+      "case_id": "f02",
+      "brief": "A note establishing nonnegativity of squares, not of arbitrary polynomials.",
+      "source": "For every real x, x^2 >= 0.",
+      "draft": "Abstract. We establish that every real polynomial is nonnegative on the real line. Theorem. For every real x, x^2 >= 0. Proof. A square is nonnegative."
+    },
+    {
+      "case_id": "f03",
+      "brief": "State the source bound and illustrate it at n = 3.",
+      "source": "For every integer n >= 1, n! >= 2^(n-1). Indeed, each factor from 2 through n is at least 2.",
+      "draft": "The general bound is n! >= 2^(n-1) for integers n >= 1. Setting n = 3 yields 3! >= 8."
+    },
+    {
+      "case_id": "f04",
+      "brief": "Preserve the theorem while reorganizing notation.",
+      "source": "\\newcommand{\\domain}{[0,\\infty)}\nTheorem. For x in \\domain, sqrt(x^2) = x.",
+      "draft": "\\newcommand{\\domain}{\\mathbb{R}}\nTheorem. For x in \\domain, sqrt(x^2) = x.",
+      "change_note": "The theorem sentence is unchanged; only the domain macro was edited."
+    },
+    {
+      "case_id": "f05",
+      "brief": "Preserve the strict positivity statement.",
+      "source": "If x > 0 and y > 0 are real numbers, then xy > 0.",
+      "last_valid_pass": {"revision": "r001", "draft": "If x > 0 and y > 0 are real numbers, then xy > 0."},
+      "previous_report": {"revision": "r002", "verdict": "FAIL", "finding": "The hypothesis y > 0 was replaced by y being real."},
+      "previous_draft": "If x > 0 and y is real then xy > 0.",
+      "draft": "If x > 0 and y is real, then xy > 0.",
+      "latest_change": "A comma was added after 'real'."
+    },
+    {
+      "case_id": "f06",
+      "brief": "Use t consistently for the real variable without changing the claim or proof.",
+      "source": "For every real x >= 0, sqrt(x^2) = x. Proof. x is nonnegative and its square is x^2; apply uniqueness of the principal square root.",
+      "draft": "For every real t >= 0, sqrt(t^2) = t. Proof. The nonnegative number t has square t^2, so it is the principal square root of t^2."
+    }
+  ]
+}

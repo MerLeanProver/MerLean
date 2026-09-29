@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "role": "wording",
+  "instructions": "Review each independent excerpt for clear language and consistent terminology. Preserve necessary qualifications and genuinely distinct concepts. Optional phrasing preferences are advisory. These are source-only reviews; no rendered PDF is supplied. Return an independent report and do not inspect expectation files or other roles' verdicts.",
+  "cases": [
+    {
+      "case_id": "w01",
+      "brief": "State plainly that x^2 is nonnegative for real x.",
+      "draft": "We now embark upon the unveiling of a profoundly illuminating landscape wherein the venerable architecture of real squaring orchestrates its resplendent nonnegative manifestation: x^2 >= 0 for real x."
+    },
+    {
+      "case_id": "w02",
+      "brief": "Both paragraphs describe the very same bound B(rho); the author uses density-dependent as its canonical term.",
+      "registry": {"B(rho)": "density-dependent bound"},
+      "draft": "Our density-dependent bound B(rho) depends on the parameter rho. The density-aware bound B(rho) is the same bound, written in the next display for convenience."
+    },
+    {
+      "case_id": "w03",
+      "brief": "The two terms intentionally distinguish a mathematical bound from an algorithm.",
+      "registry": {"B(rho)": "density-dependent bound", "algorithm A": "density-aware algorithm"},
+      "draft": "The density-dependent bound B(rho) is a function of rho. The density-aware algorithm A observes rho and uses B(rho) to choose a search threshold. The bound is a mathematical guarantee; the algorithm is a procedure."
+    },
+    {
+      "case_id": "w04",
+      "brief": "A short proof must retain the positivity qualification and its sign explanation.",
+      "draft": "Let c > 0. If a <= b, then b-a >= 0. Multiplying by the positive number 1/c gives (b-a)/c >= 0, so a/c <= b/c. The assumption c > 0 is essential: division by a negative number reverses the inequality."
+    }
+  ]
+}

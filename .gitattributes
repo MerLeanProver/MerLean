@@ -1,0 +1,2 @@
+# Shell entrypoints and receipt-verified generated packages must survive Windows checkout.
+* text=auto eol=lf
