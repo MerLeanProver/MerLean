@@ -17,6 +17,14 @@ Codex may require registering that command with its own MCP configuration: do no
 that a project JSON file automatically installs an MCP server. If no server is loaded,
 use Lean CLI diagnostics or explain the required host configuration.
 
-Read the paper protocol and use the same `paperctl` checks as Claude. Internal historical
+For new paper-writing runs, read `workflows/paper-recursive-writing.md` and dispatch its
+internal planner, writer, and four checker roles using existing host subagent tools. With
+three child slots, review in parallel waves; collect all four reports before replanning.
+Whole-paper objectives are normal, not an exception to a forced micro-task rule. Checkers
+receive frozen snapshots and their own prior feedback, not peers' current verdicts. Main
+alone applies worker patches and registers state. No standalone launcher or extra login is
+needed. Preserve schema-version-1 saved runs under the retained legacy paper protocol.
+
+Use the same `paperctl` checks as Claude. Internal historical
 tool labels such as Task, Read, or Grep mean the corresponding available Codex tools,
 not permission to assume a nonexistent API.

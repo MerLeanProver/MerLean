@@ -14,6 +14,11 @@ Statement-only translation and read-only inspection do not run proof loops or aw
 Paper-writing preserves existing theorem grades and cannot promote them. No automatic
 Lite-to-Heavy escalation unless the user authorized that sequence.
 
+Paper-writing's `synthesize` mode accepts informal research notes without a campaign or Lean
+installation. It pauses for author selection before focused novelty review and stops with an
+assessment/handoff, not a draft or a newly launched research task. Its authoritative run state
+is maintained by the coordinator, separately from any research plan graph.
+
 ## Paths and internal capabilities
 
 The public entrypoint supplies `<PLUGIN_ROOT>` and the provider adapter. All internal

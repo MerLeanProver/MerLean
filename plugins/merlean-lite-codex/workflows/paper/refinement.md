@@ -1,5 +1,21 @@
 # Refinement mode
 
+## Protocol selection
+
+New refinement runs use schema version 2 and `workflows/paper-recursive-writing.md`. The
+version rule, exclusive output reservation, immutable baseline, main-result preservation,
+recoverable coverage, and independently reviewed equivalence requirements still apply.
+Without separately supplied authority, the original manuscript is the mathematical baseline;
+record that limitation. Authoritative notes may be added with repeated `--source`, with an
+approved `--brief` and optional `--max-review-rounds` (default five).
+
+Schema-version-1 saved runs retain the complete legacy procedure below. For schema version 2,
+use frozen revision snapshots instead of a mandatory shrink phase: length is informational,
+faithful statement/proof reformulations are permitted with the required hash-bound independent
+reviews, and useful definitions/reminders need not satisfy a rigid placement rule. Do not use
+that flexibility to weaken hypotheses, alter main-result identities, or bypass coverage.
+Changing protocols requires a new run, not a silent reinterpretation of saved gate evidence.
+
 ## Version rule
 
 Only a terminal `-vN` before `.tex` counts. `paper.tex` and `paper-v0.tex` both produce

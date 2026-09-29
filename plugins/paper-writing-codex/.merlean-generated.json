@@ -21,7 +21,7 @@
   "files": {
     ".codex-plugin/plugin.json": {
       "mode": 420,
-      "sha256": "dec7a53092c0eef6d99ea21680f3b3271c99fe9242199ca6a821f57a6f6c7dbc"
+      "sha256": "dde5163add17007c30e06bd1451c227c54e3dcc9fcc29561454544fb51e636d6"
     },
     "AGENTS.md": {
       "mode": 420,
@@ -41,7 +41,7 @@
     },
     "README.md": {
       "mode": 420,
-      "sha256": "69bd8c94bbe2c1d214074084eadecc2c80ccd53b46200faf9e800250a9042365"
+      "sha256": "b57c19f4f858af17286f0a6dff087480a370856cbf13c78a8cb4109eb46e81f8"
     },
     "SECURITY.md": {
       "mode": 420,
@@ -63,17 +63,25 @@
       "mode": 420,
       "sha256": "67ca57035c15ba08df83a1513bfca7c366a6981acd89f9cbd33a707458b1cb40"
     },
+    "docs/recursive-writer.md": {
+      "mode": 420,
+      "sha256": "a1a85af4244434d430b3ec98e61018baad587cca8315435cf1b766fc031773f3"
+    },
+    "docs/research-to-paper-synthesis.md": {
+      "mode": 420,
+      "sha256": "bb982fc916c3d3fae56f25da6c04b6471b154eebdeff93552bd14db547ad6631"
+    },
     "docs/trust-and-instantiation-gates.md": {
       "mode": 420,
       "sha256": "0765d198201d873e793a4247d4c732fa7cd328cd0595a69885eb5ed21d5f5e6d"
     },
     "ports/claude.md": {
       "mode": 420,
-      "sha256": "a91bae82eb63c3af52fa93cb9690ea5252574209cd1dab881cd3759e29021930"
+      "sha256": "406731e50fa1f7a0025b0198e085893719e853dd5655b6c6ab3946228d05c53c"
     },
     "ports/codex.md": {
       "mode": 420,
-      "sha256": "4956e4999eff96574ff16f12b703bcb292d1801177b7884b5e6cfedead849434"
+      "sha256": "99997ee13bbee5555bf091973bffb629afea7a6111b7dca329bd65c0d69c73e0"
     },
     "roles/compile-fix.md": {
       "mode": 420,
@@ -86,6 +94,30 @@
     "roles/nl-prover.md": {
       "mode": 420,
       "sha256": "d54ea00bcd9695c7022583630671130e8f6c5ecdbfdbb1a854e6fb7caced1b54"
+    },
+    "roles/paper-faithfulness.md": {
+      "mode": 420,
+      "sha256": "86f351fff42c58aa6ab577fdc7f60c0b95f480d837900c876d79df3508179cff"
+    },
+    "roles/paper-narrative.md": {
+      "mode": 420,
+      "sha256": "1e3f2689b9a30a61620f5681e4787e82a64993f110783223754dc989c2358ec4"
+    },
+    "roles/paper-notation.md": {
+      "mode": 420,
+      "sha256": "d5a99876f33366031df2e7d5c4f60173f83434b7ac67426526e7249c62cb9cdc"
+    },
+    "roles/paper-planner.md": {
+      "mode": 420,
+      "sha256": "70c3c1a248e902fffe43cd6279c370af7abcd2ba2fc4e8d52de1f01865206b8d"
+    },
+    "roles/paper-wording.md": {
+      "mode": 420,
+      "sha256": "c6b3329807200494c06bcee372af944bdcd5a71d500bd70cf4a6cbb1e7c35a71"
+    },
+    "roles/paper-writer.md": {
+      "mode": 420,
+      "sha256": "618420f0a1c7b7d632bd3b64f36f24bff8274d3bb9dd77ee89d21a17e95c134a"
     },
     "roles/route-scout.md": {
       "mode": 420,
@@ -121,11 +153,11 @@
     },
     "skills/paper-writing/SKILL.md": {
       "mode": 420,
-      "sha256": "91641e4f2d54da5127d2d1a1bb6e58381aa40960d91d35dbc8566d80db1eeed2"
+      "sha256": "c903fdff59d79a774c46ba5766633d0291c81a0c7a98a1b46b56c4df2d70023d"
     },
     "skills/paper-writing/agents/openai.yaml": {
       "mode": 420,
-      "sha256": "c3ec539af0f67a9ed4544c5c8fb75537e45ac3ca9e585edaa09d17db030cf180"
+      "sha256": "636e661e7acbc565e4056f52d169cd5883eaaf005785c9e2e32ec582af009aa0"
     },
     "src/cli.py": {
       "mode": 420,
@@ -141,7 +173,7 @@
     },
     "src/paper_writing_codex/cli.py": {
       "mode": 420,
-      "sha256": "205b7d28b8ecf4796348fecea03e57ea576f0da104b5076b1afc7c478601cb6c"
+      "sha256": "539e6cccf10ba704838cc76279bb734cd8c0c8dbde3bb26635e545e3f465d491"
     },
     "src/paper_writing_codex/coverage.py": {
       "mode": 420,
@@ -151,21 +183,37 @@
       "mode": 420,
       "sha256": "79d1da75cf885f017cd6f8d42f9d24284826408a2d6866b7bee3bc74089ef1ab"
     },
+    "src/paper_writing_codex/recursive_writer.py": {
+      "mode": 420,
+      "sha256": "3397745cbc71aa4890b32bb4625e69d6e3a0a447b717273a19a7e7c394329a3f"
+    },
     "src/paper_writing_codex/safe_extract.py": {
       "mode": 420,
       "sha256": "ac4531762742023d3ba500caf3f2faf3f0b58f49fa6826441068d873c13c3ed5"
     },
+    "src/paper_writing_codex/synthesis.py": {
+      "mode": 420,
+      "sha256": "ab6929d7697569d980b6bf6155ca50fe5e88315d73d81d6c325ae9a60f05acd5"
+    },
+    "src/paper_writing_codex/synthesis_bridge.py": {
+      "mode": 420,
+      "sha256": "76cc24228b37e80b71a79dd3d467dd738a155eed7d6714de0a69a080405689cb"
+    },
     "src/paper_writing_codex/tex_inventory.py": {
       "mode": 420,
-      "sha256": "37fe2d406911b2b063ca0fdf39ddee5248a10d37db7238c60529b55825354e7d"
+      "sha256": "2c31c2de8ac5dbae162b99532623a6bc55a8852232ece22249687d7f44ed67f9"
     },
     "src/paper_writing_codex/versioning.py": {
       "mode": 420,
-      "sha256": "206ced8ee51bd9aeb5f13f1beff60b88bec9247280e5ab29bc5ef19fa0574237"
+      "sha256": "4ff0f96c3c8421417b21ec680a5ae3f85592f856fbd393ae07b48e389140b170"
     },
     "src/paper_writing_codex/workflow.py": {
       "mode": 420,
-      "sha256": "ea6917643781389b9826e563e47940cf9c1fd86049714c4c31f8d86c64f91464"
+      "sha256": "40692d9bc0ae2080ff7742b0d7b8d618fef2b72e2dede9cc197c5ab9273c1fd5"
+    },
+    "src/paper_writing_codex/writing_snapshot.py": {
+      "mode": 420,
+      "sha256": "670dd048749783826ae1948495402a5472c22c56dccdc9d1459f79e7ad5424cf"
     },
     "src/plan_store/README.md": {
       "mode": 420,
@@ -281,7 +329,7 @@
     },
     "workflows/common.md": {
       "mode": 420,
-      "sha256": "e1fb60ba991c1fdc26cdf81c2776338782722f10418a7ecfea7c986016b1c5ce"
+      "sha256": "af044c2230fdf801f7fb159be242a3d8e8838466827cda98939ae768ed72175a"
     },
     "workflows/formalize.md": {
       "mode": 420,
@@ -309,19 +357,27 @@
     },
     "workflows/paper-audit.md": {
       "mode": 420,
-      "sha256": "17269af6cffcfecbc3c1d69ac9643e93a01f7978a37eb8e468d519d1d8b51631"
+      "sha256": "0cc4f26c47dc4da4d30f8550a7f185b149cb25d011599f773c98caf6f1f083b7"
     },
     "workflows/paper-claude-protocol.md": {
       "mode": 420,
-      "sha256": "ff05f76964a2613d180f4c8466434c3d4fa500a5d6c32d07fa6f1d2b06f6cf7a"
+      "sha256": "f92f35292ea0db5b82fbd2b2200d4460a811085706374c87c8b1778d4a3e1975"
     },
     "workflows/paper-compose.md": {
       "mode": 420,
-      "sha256": "fdcbca9ae7d937054e63538cdaecc6dd507accb3832d3db7aad58e30cd622f00"
+      "sha256": "b459a006e72aa5cc76e0610795c2fabe98c81fd5155d9ed2748dd922168c71cf"
+    },
+    "workflows/paper-recursive-writing.md": {
+      "mode": 420,
+      "sha256": "ee0163a676fc5ec434a925409a5b23c5202975eda22476485df77feea9776e94"
+    },
+    "workflows/paper-synthesis.md": {
+      "mode": 420,
+      "sha256": "36831b1159d648b6a273a8d61e95599077b5258a305a5d462a05f33fd8182dc3"
     },
     "workflows/paper-writing.md": {
       "mode": 420,
-      "sha256": "f48e9951174138e60003c31dfaa7ba83d412e230de0d85377b19806962d49595"
+      "sha256": "0e281003fdf282688fd1d50f4f328767e9832dae3be5e39f277dc3c56f2d8249"
     },
     "workflows/paper/audit-checklist.md": {
       "mode": 420,
@@ -333,7 +389,7 @@
     },
     "workflows/paper/protocol.md": {
       "mode": 420,
-      "sha256": "c51b415797d5439e504fde4b4aac7b5c252399d9cfea313002d549f585861c38"
+      "sha256": "a7eabdd29564b161f4e6cbf4b93f9183801172f4319ec8b33029f20a17f045f3"
     },
     "workflows/paper/references.md": {
       "mode": 420,
@@ -341,7 +397,7 @@
     },
     "workflows/paper/refinement.md": {
       "mode": 420,
-      "sha256": "408577ec2de9798b1a1886ad9fe1b2b49cb1d0763b82dc6e2dbd9a8a2c239a71"
+      "sha256": "a362059d35e733613f69aa937ad314d769290f1daaf00e3a26517cfbbf26a29a"
     },
     "workflows/plan-graph.md": {
       "mode": 420,

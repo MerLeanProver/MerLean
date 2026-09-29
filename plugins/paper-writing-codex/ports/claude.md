@@ -20,5 +20,11 @@ CLI diagnostics. `<PLUGIN_ROOT>/scripts/merlean` works in both online and explic
 `PLAN_OFFLINE=1` modes, with optional `MERLEAN_RUNTIME` for a writable external venv.
 
 Paper-writing uses the same deterministic `paperctl` preservation/refinement checks as
-Codex. Its historical Claude eight-step presentation protocol is retained as an internal
-reference; it does not replace the shared reference, baseline, and completion gates.
+Codex. New runs read `workflows/paper-recursive-writing.md` and use existing Task/subagent
+tools for the internal planner, writer, and four independent checker roles. Whole-paper
+objectives are normal. Review all four roles in parallel within available capacity, gather
+all reports before replanning, and give each reviewer its own previous feedback rather than
+peers' current verdicts. Main alone accepts patches and writes authoritative state. Do not
+add a model launcher or authentication step. The historical Claude eight-step presentation
+protocol applies only to schema-version-1 saved or explicitly selected legacy runs; it does
+not replace shared source, baseline, reference, or completion safeguards.

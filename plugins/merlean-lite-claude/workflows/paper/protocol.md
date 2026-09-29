@@ -1,5 +1,17 @@
 # Gated paper protocol
 
+This is the retained **schema-version-1** protocol. New schema-version-2 compose/refine runs
+follow `workflows/paper-recursive-writing.md` instead. They retain preservation/source checks
+but do not inherit mandatory negative shrink, byte-identical post-draft statements, rigid
+definition placement, or the old stage sequence. Never reinterpret an old gate PASS as a new
+checker receipt. Historical checkpoint instructions do not authorize commits without a user
+request.
+
+This protocol governs manuscript composition/refinement, not notes-only synthesis. Follow
+`workflows/paper-synthesis.md` for a synthesis state, including its read-only resume/audit.
+Composition from a synthesis imports the approved contribution and evidence but must still pass
+every applicable composition gate. It never silently reselects the paper's central contribution.
+
 ## Artifacts and gates
 
 ### 0. Preflight and baseline lock
@@ -26,6 +38,11 @@ paths are navigation aids, not substitutes for the dependency cone. Freeze the g
 the dependency and reverse-consumer maps. Gate: verify grades and hypotheses against actual
 certificate/audit files.
 
+For an informal synthesis handoff, its full frozen claim dependency closure is the input DAG.
+Verify available proof records and their explicit status; absence of Lean is not a false claim of
+formal verification. Keep informal and formal evidence distinct. The synthesis inventory is not
+itself a theorem-grade certificate.
+
 ### 2. Empty framework
 
 Deliver compilable `02-framework.tex`: Introduction; Preliminaries/Setup; one mathematics-named
@@ -35,17 +52,26 @@ orphaned baseline topic.
 
 ### 3. Main results, novelty, theme
 
-Choose 2–4 strongest, deepest results forming one through-line. Reuse a dated novelty record, then
+Choose 1–4 results supporting the strongest substantial contribution with one through-line.
+Do not pad theorem counts or equate depth with significance. An approved synthesis already fixes
+this contribution: validate its imported claims and evidence instead of restarting selection.
+Reuse a dated novelty record, then
 search arXiv from that date through today. Confirm closest hits and inspect source TeX, not search
 snippets. Record `CLEAR`, scoped `ADJACENT` with a delta sentence, or `COLLISION`. Decide a
 field-standard title and three-sentence theme. Deliver `03-main-results.md`. In compose mode also
 lock each result in `03-main-results.json` with its graph node, body label, normalized statement
 hash, complete hypothesis surface, `CLEAR`/`ADJACENT` novelty status, and evidence. Gate: no unresolved
 collision and one-sentence through-line. In refine mode the main-result lock cannot be demoted.
+`CLEAR` records no collision within the documented search, not a proof of global novelty.
+An imported synthesis statement retains its source hash and candidate digest. Its new TeX
+statement lock always requires two independent hash-bound scope/equivalence reviews of the full
+manuscript context, as specified in `docs/research-to-paper-synthesis.md`; never fill a
+new hash merely to bypass an unsupported translation.
 
 ### 4. Proof-dependency presentation and supporting lemmas
 
-Work only in Lean and Markdown during this stage; do not edit candidate or paper TeX. Use the full
+Work in Markdown and inspect available proof sources during this stage; do not edit immutable
+source notes, candidate TeX, or paper TeX. Use the full
 selected-result ancestor cone in `01-critical-path.md` as the frozen formal DAG and `04-lemmas.md`
 as the reader-facing dependency plan and recovery ledger.
 
@@ -55,13 +81,17 @@ formal dependencies and consumers, presentation dependencies and paper consumers
 rationale, and recovery anchor. A direct specialization may be collapsed only when a placeholder-
 free Lean witness proves it by explicit instantiation of the retained general result without another
 theorem-grade ingredient. Selected and locked results are always `KEEP`.
+For informal dependencies, retain the corresponding exact instantiation argument and independent
+scope review instead; never describe that evidence as a compiling Lean witness or remove a claim
+whose instantiation has not actually been justified.
 
 Map every old live paper consumer of a collapsed or omitted unit to a surviving replacement, then
 recompute the reverse presentation-consumer map. Formal edges remain frozen. If an explicitly
 authorized Lean edit changes them, invalidate this and every later gate, rebuild Lean, regenerate
 the formal graph, and record the old/new edges before continuing. Gate: the full cone is covered,
 the presentation DAG is acyclic, every consumer resolves, every omission is recoverable, every
-specialization witness compiles without placeholders or new axioms, and no TeX changed in this
+formal specialization witness compiles without placeholders or new axioms (informal witnesses
+instead have independently reviewed arguments), and no TeX changed in this
 stage.
 
 ### 5. Organize and draft
@@ -121,7 +151,7 @@ collision checks. Replace synonyms, avoid invented nouns unless explicitly intro
 one-symbol/two-object or two-symbol/one-object conflicts. Gate: grep and independent semantic audits find no
 unresolved synonym or notation collision.
 
-Only after the proof plan, Lean build, compression, definition census, and terminology checks pass,
+Only after the proof plan, any required Lean build, compression, definition census, and terminology checks pass,
 freeze a pre-layout inventory and apply layout as a presentation-only pass. Preserve a supplied
 journal class; otherwise use a standard mathematics-journal class with approximately `0.85in`
 margins and never less than `0.75in`. The pass may change only the class and ordinary geometry,

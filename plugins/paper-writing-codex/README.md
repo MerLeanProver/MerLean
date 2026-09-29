@@ -1,6 +1,6 @@
 # paper-writing-codex
 
-Compose, refine, resume, and audit mathematics papers without losing results.
+Synthesize research notes; compose, refine, resume, and audit papers with preserved evidence.
 
 Entrypoint: `skills/paper-writing/SKILL.md`. Provider: `codex`.
 Generated from the shared MerLean source; edit that source, not this bundle.

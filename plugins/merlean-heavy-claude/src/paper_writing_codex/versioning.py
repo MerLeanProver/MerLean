@@ -6,6 +6,7 @@ import errno
 import os
 from pathlib import Path
 import re
+import stat
 import sys
 import tempfile
 
@@ -15,6 +16,11 @@ def atomic_rename_noreplace(source: Path, destination: Path) -> None:
 
     Fail closed on platforms without a no-replace rename primitive.
     """
+    if os.name == "nt":
+        # Windows rename fails if the destination already exists; unlike POSIX
+        # rename it does not replace it. Avoid loading the POSIX C runtime here.
+        os.rename(source, destination)
+        return
     libc = ctypes.CDLL(None, use_errno=True)
     source_bytes = os.fsencode(source)
     destination_bytes = os.fsencode(destination)
@@ -81,6 +87,30 @@ def sha256_file(path: Path) -> str:
     return digest.hexdigest()
 
 
+def _set_owned_staging_times(descriptor: int, path: Path, times: tuple[int, int]) -> None:
+    """Preserve timestamps on platforms whose utime does not accept descriptors.
+
+    The fallback acts only on the still-open, privately reserved staging inode,
+    with path identity checked both before and after applying metadata. It never
+    targets the public destination or relaxes file permissions.
+    """
+    if os.utime in os.supports_fd:
+        os.utime(descriptor, ns=times)
+        return
+    owned = os.fstat(descriptor)
+
+    def require_owned_path() -> None:
+        current = path.lstat()
+        if (not stat.S_ISREG(current.st_mode)
+                or getattr(current, "st_file_attributes", 0) & 0x400
+                or (current.st_dev, current.st_ino) != (owned.st_dev, owned.st_ino)):
+            raise RuntimeError("staging path no longer matches the owned snapshot")
+
+    require_owned_path()
+    os.utime(path, ns=times)
+    require_owned_path()
+
+
 def exclusive_copy(source: Path, destination: Path) -> dict[str, int | str]:
     """Copy one coherent source snapshot and atomically publish without overwrite.
 
@@ -97,7 +127,7 @@ def exclusive_copy(source: Path, destination: Path) -> dict[str, int | str]:
     source_fd = -1
     digest = hashlib.sha256()
     try:
-        source_fd = os.open(source, os.O_RDONLY)
+        source_fd = os.open(source, os.O_RDONLY | getattr(os, "O_BINARY", 0))
         before = os.fstat(source_fd)
         while True:
             chunk = os.read(source_fd, 1024 * 1024)
@@ -116,7 +146,7 @@ def exclusive_copy(source: Path, destination: Path) -> dict[str, int | str]:
         if any(getattr(before, field) != getattr(path_stat, field) for field in fields):
             raise RuntimeError("source path changed while snapshotting")
         os.fchmod(destination_fd, before.st_mode & 0o777)
-        os.utime(destination_fd, ns=(before.st_atime_ns, before.st_mtime_ns))
+        _set_owned_staging_times(destination_fd, staging_file, (before.st_atime_ns, before.st_mtime_ns))
         os.fsync(destination_fd)
         staged = os.fstat(destination_fd)
     finally:

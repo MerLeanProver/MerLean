@@ -92,7 +92,15 @@ def _write_common_artifacts(work: Path) -> None:
     )
 
 
-def init_refine(source: Path, work_dir: Path | None = None, dry_run: bool = False) -> dict[str, Any]:
+def init_refine(
+    source: Path, work_dir: Path | None = None, dry_run: bool = False, *,
+    workflow_version: int = 1, authoritative_sources: list[Path] | None = None,
+    brief: Path | None = None, max_review_rounds: int = 5,
+) -> dict[str, Any]:
+    if workflow_version not in {1, 2}:
+        raise ValueError("workflow_version must be 1 (legacy) or 2 (recursive)")
+    if max_review_rounds < 1:
+        raise ValueError("max_review_rounds must be positive")
     destination, current, following = next_version_path(source)
     source = source.expanduser().absolute()
     work = (work_dir or default_work_dir(destination)).expanduser().absolute()
@@ -106,6 +114,7 @@ def init_refine(source: Path, work_dir: Path | None = None, dry_run: bool = Fals
         "source_sha256": sha256_file(source),
     }
     if dry_run:
+        report["schema_version"] = workflow_version
         return report
     if destination.exists():
         raise FileExistsError(f"refusing to overwrite next version: {destination}")
@@ -189,6 +198,12 @@ def init_refine(source: Path, work_dir: Path | None = None, dry_run: bool = Fals
         }
         write_json(work / "00-run-state.json", state)
         verify_output(state, require_reservation=True, require_content=True)
+        if workflow_version == 2:
+            from .recursive_writer import initialize
+            return initialize(
+                work / "00-run-state.json", authoritative_sources or [source], brief,
+                max_review_rounds=max_review_rounds,
+            )
         return state
     except Exception:
         # Do not remove a successfully exclusive-created candidate: preserving a visibly staged
@@ -196,7 +211,19 @@ def init_refine(source: Path, work_dir: Path | None = None, dry_run: bool = Fals
         raise
 
 
-def init_compose(output: Path, work_dir: Path | None = None) -> dict[str, Any]:
+def init_compose(
+    output: Path, work_dir: Path | None = None, *, from_synthesis: Path | None = None,
+    workflow_version: int = 1, authoritative_sources: list[Path] | None = None,
+    brief: Path | None = None, max_review_rounds: int = 5,
+) -> dict[str, Any]:
+    if workflow_version not in {1, 2}:
+        raise ValueError("workflow_version must be 1 (legacy) or 2 (recursive)")
+    if max_review_rounds < 1:
+        raise ValueError("max_review_rounds must be positive")
+    handoff = None
+    if from_synthesis is not None:
+        from .synthesis import prepare_handoff
+        handoff = prepare_handoff(from_synthesis)
     output = output.expanduser().absolute()
     if output.suffix.lower() != ".tex":
         raise ValueError("compose output must be .tex")
@@ -224,14 +251,25 @@ def init_compose(output: Path, work_dir: Path | None = None) -> dict[str, Any]:
         },
     }
     state["gates"]["preflight"] = {"status": "pass", "evidence": ["output absent"], "updated_at": _now()}
+    if handoff is not None:
+        from .synthesis_bridge import import_handoff
+        state["synthesis_origin"] = import_handoff(handoff, work)
     write_json(work / "00-run-state.json", state)
     verify_output(state, require_reservation=True, require_content=True)
+    if workflow_version == 2:
+        from .recursive_writer import initialize
+        return initialize(
+            work / "00-run-state.json", authoritative_sources or [], brief,
+            max_review_rounds=max_review_rounds,
+        )
     return state
 
 
 def verify_output(
     state: dict[str, Any], *, require_reservation: bool = False, require_content: bool = False,
 ) -> None:
+    if state.get("mode") == "synthesize":
+        raise ValueError("synthesis has no manuscript output; use its synthesis commands")
     output = Path(state["output"])
     try:
         output_stat = os.lstat(output)
@@ -278,6 +316,9 @@ def claim_output(state_path: Path) -> dict[str, Any]:
 
 
 def verify_source(state: dict[str, Any]) -> None:
+    if state.get("synthesis_origin"):
+        from .synthesis_bridge import verify_import
+        verify_import(state)
     if state.get("mode") != "refine":
         return
     source = Path(state["source"])
@@ -299,6 +340,12 @@ def verify_source(state: dict[str, Any]) -> None:
 
 def mark_gate(state_path: Path, name: str, status: str, evidence: list[str]) -> dict[str, Any]:
     state = json.loads(state_path.read_text(encoding="utf-8"))
+    if state.get("mode") == "synthesize":
+        from .synthesis import mark_synthesis_gate
+        return mark_synthesis_gate(state_path, name, status, evidence)
+    if state.get("schema_version") == 2:
+        from .recursive_writer import mark_writing_gate
+        return mark_writing_gate(state_path, name, status, evidence)
     verify_source(state)
     verify_output(state, require_reservation=True)
     if name not in GATES:
@@ -325,6 +372,12 @@ def mark_gate(state_path: Path, name: str, status: str, evidence: list[str]) -> 
 
 def resume_point(state_path: Path) -> dict[str, Any]:
     state = json.loads(state_path.read_text(encoding="utf-8"))
+    if state.get("mode") == "synthesize":
+        from .synthesis import resume_synthesis
+        return resume_synthesis(state_path)
+    if state.get("schema_version") == 2:
+        from .recursive_writer import resume_writing
+        return resume_writing(state_path)
     verify_source(state)
     verify_output(state, require_reservation=True)
     for gate in GATES:

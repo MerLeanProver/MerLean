@@ -1,5 +1,12 @@
 # Campaign composition details (retained Claude protocol)
 
+This supplement applies **only to saved or explicitly selected schema-version-1 writing
+runs**. New writing uses `workflows/paper-recursive-writing.md` on both providers. Its
+reader-facing motivation, proportionate explanation, faithful reformulation, useful definition
+reminders, and informational length policy replace the legacy style rules below. Do not read
+the old math-first/coarse-proof/mandatory-shrink language as constraints on recursive writing.
+Historical local-commit directions never confer authority absent a user request.
+
 This internal supplement preserves the detailed presentation checks of the original Claude
 composition workflow. The shared [paper protocol](paper/protocol.md) is authoritative for stage
 ordering, state files, versioned outputs, locks, compression artifacts, isolated compilation,
@@ -8,6 +15,12 @@ gates. For existing papers, [refinement](paper/refinement.md) governs preservati
 never authorizes demoting a locked result. Inherit `<PLUGIN_ROOT>` and the active model/concurrency
 adapter from the public paper-writing entry point. Bare `paper/` artifact paths below mean the
 work directory recorded by `paperctl`, not a second output tree.
+
+This supplement governs manuscript composition, not synthesis. For a synthesis run, use
+`workflows/paper-synthesis.md`; do not create TeX, run these campaign-only gates, or checkpoint
+commits. For an explicitly authorized composition from an informal synthesis, use the approved
+claim DAG and proof records wherever campaign/certificate inputs below do not exist. Do not
+manufacture formal evidence or reopen approved contribution selection without the author.
 
 Run in the MAIN context as the orchestrator. Subordinate dispatches (scouts, verifiers,
 reference hunters, drafting passes) follow the active runtime adapter: Claude workers retain
@@ -93,13 +106,15 @@ No content yet. GATE 2: the framework compiles under latexmk with empty sections
 
 ## STEP 3 — main-result selection + novelty double-check + title/theme
 
-3a. From the critical path, select the MAIN RESULTS (2–4): strongest, deepest on the
-    path, and forming ONE through-line (the significance-discipline rule: each must
+3a. From the dependency cone, select the MAIN RESULTS (1–4): a substantial contribution
+    forming ONE through-line, not a depth or theorem-count contest (each must
     answer "which gap does it fill; what is now known that wasn't").
+    An imported synthesis supplies this selection; validate it rather than replace it.
 3b. NOVELTY DOUBLE-CHECK, per result: reuse NOVELTY-OF-RECORD.md where it already covers
     the result, then run a FRESH arXiv sweep for anything published since the record's
     date (dispatch an independent verifier; the record's method: verdicts CLEAR/ADJACENT/
     COLLISION with evidence; summarizer output is never evidence — read the TeX).
+    CLEAR means no collision found within the recorded search scope and date, not global novelty.
     A COLLISION demotes the result and reopens 3a.
 3c. Decide TITLE + MAIN THEME. Title = a name, not a summary; field-standard nouns.
 Deliver `paper/03-main-results.md` (the selected results with their precise statements,
